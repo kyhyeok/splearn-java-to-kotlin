@@ -1,10 +1,12 @@
 spring:
-  application.name: splearn
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-
+  application:
+    name: splearn
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
   docker:
     compose:
       lifecycle-management: start_only
+  sql:
+    init:
+      mode: never
