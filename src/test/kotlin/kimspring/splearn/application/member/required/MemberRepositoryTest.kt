@@ -32,10 +32,10 @@ class MemberRepositoryTest : FunSpec() {
 
             val saved = memberRepository.save(member)
 
-            saved.id.shouldNotBeNull()
+            val id = saved.id.shouldNotBeNull()
 
             val found =
-                memberRepository.findByIdOrNull(saved.id!!)
+                memberRepository.findByIdOrNull(id)
                     ?: throw NoSuchElementException()
             found.status shouldBe MemberStatus.PENDING
             found.detail.registeredAt.shouldNotBeNull()

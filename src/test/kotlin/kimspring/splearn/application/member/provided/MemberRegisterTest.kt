@@ -74,30 +74,30 @@ class MemberRegisterTest : FunSpec() {
         }
 
         test("updateInfoFail") {
-            val member = registerMember()
-            memberRegister.activate(member.id!!)
-            memberRegister.updateInfo(member.id!!, MemberInfoUpdateRequest("Hyeok", "kim001", "자기소개"))
+            val memberId = requireNotNull(registerMember().id)
+            memberRegister.activate(memberId)
+            memberRegister.updateInfo(memberId, MemberInfoUpdateRequest("Hyeok", "kim001", "자기소개"))
 
-            val member2 = registerMember("kiim@splearn.app")
-            memberRegister.activate(member2.id!!)
+            val member2Id = requireNotNull(registerMember("kiim@splearn.app").id)
+            memberRegister.activate(member2Id)
 
             // member2는 기존의 member와 같은 프로필 주소를 사용할 수 없다
             shouldThrow<DuplicateProfileException> {
-                memberRegister.updateInfo(member2.id!!, MemberInfoUpdateRequest("Kimmy", "kim001", "자기소개임"))
+                memberRegister.updateInfo(member2Id, MemberInfoUpdateRequest("Kimmy", "kim001", "자기소개임"))
             }
 
             // 다른 프로필 주소로는 변경 가능
-            memberRegister.updateInfo(member2.id!!, MemberInfoUpdateRequest("Kimmy", "kim002", "자기소개임"))
+            memberRegister.updateInfo(member2Id, MemberInfoUpdateRequest("Kimmy", "kim002", "자기소개임"))
 
             // 기존 프로필 주소를 바꾸는 것도 가능
-            memberRegister.updateInfo(member.id!!, MemberInfoUpdateRequest("Kimmy", "kim001", "자기소개임"))
+            memberRegister.updateInfo(memberId, MemberInfoUpdateRequest("Kimmy", "kim001", "자기소개임"))
 
             // 프로필 주소를 제거하는 것도 가능
-            memberRegister.updateInfo(member.id!!, MemberInfoUpdateRequest("Kimmy", "", "자기소개임"))
+            memberRegister.updateInfo(memberId, MemberInfoUpdateRequest("Kimmy", "", "자기소개임"))
 
             // 프로필 주소 중복은 허용하지 않음
             shouldThrow<DuplicateProfileException> {
-                memberRegister.updateInfo(member.id!!, MemberInfoUpdateRequest("Kimmy", "kim002", "자기소개임"))
+                memberRegister.updateInfo(memberId, MemberInfoUpdateRequest("Kimmy", "kim002", "자기소개임"))
             }
         }
 

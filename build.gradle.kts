@@ -43,10 +43,10 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-webmvc-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("io.kotest:kotest-runner-junit5:6.1.0")
-    testImplementation("io.kotest:kotest-assertions-core:6.1.0")
-    testImplementation("io.kotest:kotest-extensions-spring:6.1.0")
-    testImplementation("io.mockk:mockk:1.14.3")
+    testImplementation("io.kotest:kotest-runner-junit5:6.1.11")
+    testImplementation("io.kotest:kotest-assertions-core:6.1.11")
+    testImplementation("io.kotest:kotest-extensions-spring:6.1.11")
+    testImplementation("io.mockk:mockk:1.14.9")
     testImplementation("com.lemonappdev:konsist:0.17.3")
 }
 
