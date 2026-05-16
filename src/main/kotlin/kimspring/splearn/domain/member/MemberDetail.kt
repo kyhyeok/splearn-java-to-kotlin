@@ -1,14 +1,10 @@
 package kimspring.splearn.domain.member
 
-import org.springframework.data.annotation.Id
-import org.springframework.data.relational.core.mapping.Embedded
-import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 
-@Table("member_detail")
 data class MemberDetail(
-    @Id val id: Long? = null,
-    @Embedded.Nullable(prefix = "profile_") val profile: Profile? = null,
+    val id: Long? = null,
+    val profile: Profile? = null,
     val introduction: String? = null,
     val registeredAt: LocalDateTime,
     val activatedAt: LocalDateTime? = null,

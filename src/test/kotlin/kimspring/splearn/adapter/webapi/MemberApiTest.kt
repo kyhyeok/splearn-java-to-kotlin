@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.context.annotation.Import
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.assertj.MockMvcTester
@@ -64,7 +63,7 @@ class MemberApiTest : FunSpec() {
             val response = objectMapper.readValue(result.response.contentAsString, MemberRegisterResponse::class.java)
 
             val foundMember =
-                memberRepository.findByIdOrNull(response.memberId!!)
+                memberRepository.findById(response.memberId!!)
                     ?: throw NoSuchElementException()
 
             foundMember.email.address shouldBe request.email

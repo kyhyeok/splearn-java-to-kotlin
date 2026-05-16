@@ -1,14 +1,10 @@
 package kimspring.splearn.domain.member
 
 import kimspring.splearn.domain.shared.Email
-import org.springframework.data.annotation.Id
-import org.springframework.data.relational.core.mapping.Embedded
-import org.springframework.data.relational.core.mapping.Table
 
-@Table("member")
 data class Member(
-    @Id val id: Long? = null,
-    @Embedded.Empty(prefix = "email_") val email: Email,
+    val id: Long? = null,
+    val email: Email,
     val nickname: String,
     val passwordHash: String,
     val status: MemberStatus,

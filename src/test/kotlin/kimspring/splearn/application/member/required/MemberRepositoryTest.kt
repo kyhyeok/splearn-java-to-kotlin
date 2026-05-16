@@ -13,7 +13,6 @@ import kimspring.splearn.domain.member.MemberStatus
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
@@ -35,7 +34,7 @@ class MemberRepositoryTest : FunSpec() {
             val id = saved.id.shouldNotBeNull()
 
             val found =
-                memberRepository.findByIdOrNull(id)
+                memberRepository.findById(id)
                     ?: throw NoSuchElementException()
             found.status shouldBe MemberStatus.PENDING
             found.detail.registeredAt.shouldNotBeNull()
