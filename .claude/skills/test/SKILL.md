@@ -296,3 +296,58 @@ class HexagonalArchitectureTest : FunSpec({
 | SpringBootTest에서 `.exchange()` 생략 | `.exchange()` 호출 후 `assertThat(result)` |
 | `Testcontainers` 도입 | H2 사용 |
 | `JUnit5 @Test`, `@BeforeEach` 어노테이션 | Kotest `test {}`, `beforeEach {}` |
+
+---
+
+## §10 Assertion 스타일
+
+두 라이브러리를 **역할에 따라** 구분한다. 혼용은 허용되지만 대상이 달라야 한다.
+
+### Kotest — 도메인 값, DB 결과, Kotlin 객체
+
+```kotlin
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.assertions.throwables.shouldThrow
+
+member.status shouldBe MemberStatus.PENDING
+member.detail.registeredAt.shouldNotBeNull()
+member.detail.activatedAt.shouldBeNull()
+
+// 예외 검증 — 모든 계층에서 사용
+shouldThrow<MemberNotFoundException> { memberFinder.find(9999L) }
+shouldThrow<InvalidMemberStateException> { member.deactivate() }
+```
+
+### AssertJ — MockMvcTester HTTP 응답 전용
+
+```kotlin
+import org.assertj.core.api.Assertions.assertThat
+
+// WebMvcTest: exchange() 없이 바로 assertThat에 전달
+assertThat(mvcTester.post().uri("/api/members").contentType(APPLICATION_JSON).content(body))
+    .hasStatus(HttpStatus.OK)
+
+// SpringBootTest: exchange() 후 assertThat
+val result = mvcTester.post().uri("/api/members").contentType(APPLICATION_JSON).content(body).exchange()
+assertThat(result)
+    .hasStatusOk()
+    .bodyJson()
+    .hasPathSatisfying("$.memberId") { assertThat(it).isNotNull() }
+    .hasPathSatisfying("$.email") { assertThat(it).isEqualTo(request.email) }
+```
+
+### 두 라이브러리를 함께 쓰는 경우 — MemberApiTest 패턴
+
+HTTP 응답은 AssertJ, 이후 DB에서 조회한 도메인 값은 Kotest.
+
+```kotlin
+// HTTP 응답 검증 → AssertJ
+assertThat(result).hasStatusOk()
+
+// DB 조회 결과 검증 → Kotest
+val member = memberRepository.findByEmail(email)!!
+member.status shouldBe MemberStatus.PENDING
+member.detail.registeredAt.shouldNotBeNull()
+```
