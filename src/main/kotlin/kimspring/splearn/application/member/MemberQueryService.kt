@@ -1,7 +1,7 @@
 package kimspring.splearn.application.member
 
-import kimspring.splearn.application.member.provided.MemberFinder
-import kimspring.splearn.application.member.required.MemberRepository
+import kimspring.splearn.application.member.port.MemberRepository
+import kimspring.splearn.application.member.usecase.MemberFinder
 import kimspring.splearn.domain.member.Member
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

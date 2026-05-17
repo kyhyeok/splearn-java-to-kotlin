@@ -8,7 +8,7 @@ import kimspring.splearn.adapter.webapi.dto.MemberRegisterResponse
 import kimspring.splearn.adapter.webapi.dto.MemberResponse
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
-import kimspring.splearn.application.member.provided.MemberRegister
+import kimspring.splearn.application.member.usecase.MemberRegister
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping

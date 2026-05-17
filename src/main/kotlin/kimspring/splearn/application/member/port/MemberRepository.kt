@@ -1,4 +1,4 @@
-package kimspring.splearn.application.member.required
+package kimspring.splearn.application.member.port
 
 import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.Profile

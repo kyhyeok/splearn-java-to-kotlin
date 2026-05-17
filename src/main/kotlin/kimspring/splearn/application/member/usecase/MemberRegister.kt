@@ -1,4 +1,4 @@
-package kimspring.splearn.application.member.provided
+package kimspring.splearn.application.member.usecase
 
 import jakarta.validation.Valid
 import kimspring.splearn.application.member.command.RegisterMemberCommand

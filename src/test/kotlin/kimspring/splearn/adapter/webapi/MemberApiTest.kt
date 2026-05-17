@@ -6,8 +6,8 @@ import io.kotest.matchers.shouldBe
 import kimspring.splearn.SplearnTestConfiguration
 import kimspring.splearn.adapter.webapi.dto.MemberRegisterResponse
 import kimspring.splearn.application.member.command.RegisterMemberCommand
-import kimspring.splearn.application.member.provided.MemberRegister
-import kimspring.splearn.application.member.required.MemberRepository
+import kimspring.splearn.application.member.port.MemberRepository
+import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.member.MemberFixture
 import kimspring.splearn.domain.member.MemberStatus
 import org.assertj.core.api.Assertions.assertThat

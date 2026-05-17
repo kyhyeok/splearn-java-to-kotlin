@@ -2,10 +2,10 @@ package kimspring.splearn.application.member
 
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
-import kimspring.splearn.application.member.provided.MemberFinder
-import kimspring.splearn.application.member.provided.MemberRegister
-import kimspring.splearn.application.member.required.EmailSender
-import kimspring.splearn.application.member.required.MemberRepository
+import kimspring.splearn.application.member.port.EmailSender
+import kimspring.splearn.application.member.port.MemberRepository
+import kimspring.splearn.application.member.usecase.MemberFinder
+import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.member.DuplicateEmailException
 import kimspring.splearn.domain.member.DuplicateProfileException
 import kimspring.splearn.domain.member.Member

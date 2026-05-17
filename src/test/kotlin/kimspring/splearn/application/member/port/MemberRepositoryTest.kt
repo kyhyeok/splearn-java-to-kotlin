@@ -1,4 +1,4 @@
-package kimspring.splearn.application.member.required
+package kimspring.splearn.application.member.port
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec

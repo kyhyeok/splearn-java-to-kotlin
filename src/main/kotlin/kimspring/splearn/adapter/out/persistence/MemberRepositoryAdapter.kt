@@ -1,6 +1,6 @@
 package kimspring.splearn.adapter.out.persistence
 
-import kimspring.splearn.application.member.required.MemberRepository
+import kimspring.splearn.application.member.port.MemberRepository
 import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.Profile
 import kimspring.splearn.domain.shared.Email

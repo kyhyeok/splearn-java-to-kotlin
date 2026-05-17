@@ -1,6 +1,6 @@
 package kimspring.splearn
 
-import kimspring.splearn.application.member.required.EmailSender
+import kimspring.splearn.application.member.port.EmailSender
 import kimspring.splearn.domain.member.MemberFixture
 import kimspring.splearn.domain.member.PasswordEncoder
 import kimspring.splearn.domain.shared.Email

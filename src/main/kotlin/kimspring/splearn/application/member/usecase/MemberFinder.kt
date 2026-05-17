@@ -1,4 +1,4 @@
-package kimspring.splearn.application.member.provided
+package kimspring.splearn.application.member.usecase
 
 import kimspring.splearn.domain.member.Member
 

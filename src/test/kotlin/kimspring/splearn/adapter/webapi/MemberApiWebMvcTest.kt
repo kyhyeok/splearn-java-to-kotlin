@@ -8,7 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
-import kimspring.splearn.application.member.provided.MemberRegister
+import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.member.MemberFixture
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
