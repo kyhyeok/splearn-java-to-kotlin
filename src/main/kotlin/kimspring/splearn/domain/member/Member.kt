@@ -20,9 +20,13 @@ data class Member(
         return copy(status = MemberStatus.DEACTIVATED, detail = detail.recordDeactivation())
     }
 
-    fun updateInfo(req: MemberInfoUpdateRequest): Member {
+    fun updateInfo(
+        nickname: String,
+        profileAddress: String,
+        introduction: String,
+    ): Member {
         check(status == MemberStatus.ACTIVE) { "등록 완료 상태가 아니면 정보를 수정할 수 없습니다." }
-        return copy(nickname = req.nickname, detail = detail.updateInfo(req))
+        return copy(nickname = nickname, detail = detail.updateInfo(profileAddress, introduction))
     }
 
     fun changePassword(
@@ -39,13 +43,15 @@ data class Member(
 
     companion object {
         fun register(
-            req: MemberRegisterRequest,
+            email: Email,
+            nickname: String,
+            password: String,
             encoder: PasswordEncoder,
         ): Member =
             Member(
-                email = Email(req.email),
-                nickname = req.nickname,
-                passwordHash = encoder.encode(req.password),
+                email = email,
+                nickname = nickname,
+                passwordHash = encoder.encode(password),
                 status = MemberStatus.PENDING,
                 detail = MemberDetail.create(),
             )

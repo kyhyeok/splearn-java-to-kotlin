@@ -6,10 +6,10 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kimspring.splearn.application.member.command.RegisterMemberCommand
+import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
 import kimspring.splearn.application.member.provided.MemberRegister
 import kimspring.splearn.domain.member.MemberFixture
-import kimspring.splearn.domain.member.MemberInfoUpdateRequest
-import kimspring.splearn.domain.member.MemberRegisterRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.TestConfiguration
@@ -43,7 +43,7 @@ class MemberApiWebMvcTest : FunSpec() {
 
         test("register") {
             val member = MemberFixture.createMember(1L)
-            val request: MemberRegisterRequest = MemberFixture.createMemberRegisterRequest()
+            val request = MemberFixture.createRegisterMemberCommand()
             every { memberRegister.register(request) } returns member
 
             val requestJson = objectMapper.writeValueAsString(request)
@@ -64,7 +64,7 @@ class MemberApiWebMvcTest : FunSpec() {
         }
 
         test("registerFail") {
-            val request: MemberRegisterRequest = MemberFixture.createMemberRegisterRequest("invalid email")
+            val request = RegisterMemberCommand("invalid email", "KimHyeok", "verysecret")
             val requestJson = objectMapper.writeValueAsString(request)
 
             assertThat(
@@ -115,7 +115,7 @@ class MemberApiWebMvcTest : FunSpec() {
         test("updateInfo") {
             val memberId = 1L
             val member = MemberFixture.createMember(memberId)
-            val request = MemberInfoUpdateRequest("validNick", "profile", "introduction")
+            val request = UpdateMemberInfoCommand("validNick", "profile", "introduction")
             every { memberRegister.updateInfo(memberId, request) } returns member
 
             val requestJson = objectMapper.writeValueAsString(request)
@@ -137,7 +137,7 @@ class MemberApiWebMvcTest : FunSpec() {
 
         test("updateInfoFail") {
             val memberId = 1L
-            val request = MemberInfoUpdateRequest("ab", "profile", "introduction")
+            val request = UpdateMemberInfoCommand("ab", "profile", "introduction")
             val requestJson = objectMapper.writeValueAsString(request)
 
             assertThat(

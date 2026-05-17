@@ -5,8 +5,9 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import kimspring.splearn.domain.member.MemberFixture.createMemberRegisterRequest
 import kimspring.splearn.domain.member.MemberFixture.createPasswordEncoder
+import kimspring.splearn.domain.member.MemberFixture.createRegisterMemberCommand
+import kimspring.splearn.domain.shared.Email
 
 class MemberTest : FunSpec() {
     private lateinit var member: Member
@@ -15,7 +16,8 @@ class MemberTest : FunSpec() {
     init {
         beforeEach {
             passwordEncoder = createPasswordEncoder()
-            member = Member.register(createMemberRegisterRequest(), passwordEncoder)
+            val command = createRegisterMemberCommand()
+            member = Member.register(Email(command.email), command.nickname, command.password, passwordEncoder)
         }
 
         test("registerMember") {
@@ -76,27 +78,25 @@ class MemberTest : FunSpec() {
 
         test("invalidEmail") {
             shouldThrow<IllegalArgumentException> {
-                Member.register(createMemberRegisterRequest("invaluid email"), passwordEncoder)
+                Member.register(Email("invaluid email"), "KimHyeok", "verysecret", passwordEncoder)
             }
 
-            Member.register(createMemberRegisterRequest(), passwordEncoder)
+            Member.register(Email("kim@gmail.com"), "KimHyeok", "verysecret", passwordEncoder)
         }
 
         test("updateInfo") {
             member = member.activate()
 
-            val request = MemberInfoUpdateRequest("Hyeok", "kim001", "자기소개")
-            member = member.updateInfo(request)
+            member = member.updateInfo("Hyeok", "kim001", "자기소개")
 
-            member.nickname shouldBe request.nickname
-            member.detail.profile!!.address shouldBe request.profileAddress
-            member.detail.introduction shouldBe request.introduction
+            member.nickname shouldBe "Hyeok"
+            member.detail.profile!!.address shouldBe "kim001"
+            member.detail.introduction shouldBe "자기소개"
         }
 
         test("updateInfoFail") {
             shouldThrow<IllegalStateException> {
-                val request = MemberInfoUpdateRequest("Hyeok", "kim001", "자기소개")
-                member.updateInfo(request)
+                member.updateInfo("Hyeok", "kim001", "자기소개")
             }
         }
     }

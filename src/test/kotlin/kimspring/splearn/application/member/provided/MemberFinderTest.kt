@@ -25,7 +25,7 @@ class MemberFinderTest : FunSpec() {
         extension(SpringExtension())
 
         test("find") {
-            val member = memberRegister.register(MemberFixture.createMemberRegisterRequest())
+            val member = memberRegister.register(MemberFixture.createRegisterMemberCommand())
 
             val found = memberFinder.find(member.id!!)
 

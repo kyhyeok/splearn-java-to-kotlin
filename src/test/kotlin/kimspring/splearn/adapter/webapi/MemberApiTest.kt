@@ -5,10 +5,10 @@ import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import kimspring.splearn.SplearnTestConfiguration
 import kimspring.splearn.adapter.webapi.dto.MemberRegisterResponse
+import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.provided.MemberRegister
 import kimspring.splearn.application.member.required.MemberRepository
 import kimspring.splearn.domain.member.MemberFixture
-import kimspring.splearn.domain.member.MemberRegisterRequest
 import kimspring.splearn.domain.member.MemberStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,7 +43,7 @@ class MemberApiTest : FunSpec() {
         extension(SpringExtension())
 
         test("register") {
-            val request: MemberRegisterRequest = MemberFixture.createMemberRegisterRequest()
+            val request: RegisterMemberCommand = MemberFixture.createRegisterMemberCommand()
             val requestJson = objectMapper.writeValueAsString(request)
 
             val result =
@@ -72,9 +72,9 @@ class MemberApiTest : FunSpec() {
         }
 
         test("duplicateEmail") {
-            memberRegister.register(MemberFixture.createMemberRegisterRequest())
+            memberRegister.register(MemberFixture.createRegisterMemberCommand())
 
-            val request: MemberRegisterRequest = MemberFixture.createMemberRegisterRequest()
+            val request: RegisterMemberCommand = MemberFixture.createRegisterMemberCommand()
             val requestJson = objectMapper.writeValueAsString(request)
 
             val result =

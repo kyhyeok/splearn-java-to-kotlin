@@ -1,5 +1,7 @@
 package kimspring.splearn.application.member
 
+import kimspring.splearn.application.member.command.RegisterMemberCommand
+import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
 import kimspring.splearn.application.member.provided.MemberFinder
 import kimspring.splearn.application.member.provided.MemberRegister
 import kimspring.splearn.application.member.required.EmailSender
@@ -7,8 +9,6 @@ import kimspring.splearn.application.member.required.MemberRepository
 import kimspring.splearn.domain.member.DuplicateEmailException
 import kimspring.splearn.domain.member.DuplicateProfileException
 import kimspring.splearn.domain.member.Member
-import kimspring.splearn.domain.member.MemberInfoUpdateRequest
-import kimspring.splearn.domain.member.MemberRegisterRequest
 import kimspring.splearn.domain.member.PasswordEncoder
 import kimspring.splearn.domain.member.Profile
 import kimspring.splearn.domain.shared.Email
@@ -25,9 +25,9 @@ class MemberModifyService(
     private val emailSender: EmailSender,
     private val passwordEncoder: PasswordEncoder,
 ) : MemberRegister {
-    override fun register(registerRequest: MemberRegisterRequest): Member {
-        checkDuplicateEmail(registerRequest)
-        val member = Member.register(registerRequest, passwordEncoder)
+    override fun register(command: RegisterMemberCommand): Member {
+        checkDuplicateEmail(command)
+        val member = Member.register(Email(command.email), command.nickname, command.password, passwordEncoder)
         val saved = memberRepository.save(member)
         sendWelcomeEmail(saved)
         return saved
@@ -45,11 +45,11 @@ class MemberModifyService(
 
     override fun updateInfo(
         memberId: Long,
-        updateRequest: MemberInfoUpdateRequest,
+        command: UpdateMemberInfoCommand,
     ): Member {
         val member = memberFinder.find(memberId)
-        checkDuplicateProfile(member, updateRequest.profileAddress)
-        return memberRepository.save(member.updateInfo(updateRequest))
+        checkDuplicateProfile(member, command.profileAddress)
+        return memberRepository.save(member.updateInfo(command.nickname, command.profileAddress, command.introduction))
     }
 
     private fun checkDuplicateProfile(
@@ -68,9 +68,9 @@ class MemberModifyService(
         emailSender.send(member.email, "등록을 완료해주세요.", "아래 링크를 클릭해서 등록을 완료해주세요.")
     }
 
-    private fun checkDuplicateEmail(registerRequest: MemberRegisterRequest) {
-        if (memberRepository.findByEmail(Email(registerRequest.email)) != null) {
-            throw DuplicateEmailException("이미 사용중인 이메일입니다: ${registerRequest.email}")
+    private fun checkDuplicateEmail(command: RegisterMemberCommand) {
+        if (memberRepository.findByEmail(Email(command.email)) != null) {
+            throw DuplicateEmailException("이미 사용중인 이메일입니다: ${command.email}")
         }
     }
 }

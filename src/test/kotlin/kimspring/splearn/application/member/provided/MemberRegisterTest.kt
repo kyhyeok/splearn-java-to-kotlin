@@ -7,12 +7,12 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import jakarta.validation.ConstraintViolationException
 import kimspring.splearn.SplearnTestConfiguration
+import kimspring.splearn.application.member.command.RegisterMemberCommand
+import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
 import kimspring.splearn.domain.member.DuplicateEmailException
 import kimspring.splearn.domain.member.DuplicateProfileException
 import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.MemberFixture
-import kimspring.splearn.domain.member.MemberInfoUpdateRequest
-import kimspring.splearn.domain.member.MemberRegisterRequest
 import kimspring.splearn.domain.member.MemberStatus
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -30,17 +30,17 @@ class MemberRegisterTest : FunSpec() {
         extension(SpringExtension())
 
         test("register") {
-            val member = memberRegister.register(MemberFixture.createMemberRegisterRequest())
+            val member = memberRegister.register(MemberFixture.createRegisterMemberCommand())
 
             member.shouldNotBeNull()
             member.status shouldBe MemberStatus.PENDING
         }
 
         test("duplicateEmailFail") {
-            memberRegister.register(MemberFixture.createMemberRegisterRequest())
+            memberRegister.register(MemberFixture.createRegisterMemberCommand())
 
             shouldThrow<DuplicateEmailException> {
-                memberRegister.register(MemberFixture.createMemberRegisterRequest())
+                memberRegister.register(MemberFixture.createRegisterMemberCommand())
             }
         }
 
@@ -67,54 +67,54 @@ class MemberRegisterTest : FunSpec() {
             val member = registerMember()
             val activated = memberRegister.activate(member.id!!)
 
-            val request = MemberInfoUpdateRequest("Hyeok", "kim001", "자기소개")
-            val updated = memberRegister.updateInfo(activated.id!!, request)
+            val command = UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개")
+            val updated = memberRegister.updateInfo(activated.id!!, command)
 
-            updated.detail.profile!!.address shouldBe request.profileAddress
+            updated.detail.profile!!.address shouldBe command.profileAddress
         }
 
         test("updateInfoFail") {
             val memberId = requireNotNull(registerMember().id)
             memberRegister.activate(memberId)
-            memberRegister.updateInfo(memberId, MemberInfoUpdateRequest("Hyeok", "kim001", "자기소개"))
+            memberRegister.updateInfo(memberId, UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개"))
 
             val member2Id = requireNotNull(registerMember("kiim@splearn.app").id)
             memberRegister.activate(member2Id)
 
             // member2는 기존의 member와 같은 프로필 주소를 사용할 수 없다
             shouldThrow<DuplicateProfileException> {
-                memberRegister.updateInfo(member2Id, MemberInfoUpdateRequest("Kimmy", "kim001", "자기소개임"))
+                memberRegister.updateInfo(member2Id, UpdateMemberInfoCommand("Kimmy", "kim001", "자기소개임"))
             }
 
             // 다른 프로필 주소로는 변경 가능
-            memberRegister.updateInfo(member2Id, MemberInfoUpdateRequest("Kimmy", "kim002", "자기소개임"))
+            memberRegister.updateInfo(member2Id, UpdateMemberInfoCommand("Kimmy", "kim002", "자기소개임"))
 
             // 기존 프로필 주소를 바꾸는 것도 가능
-            memberRegister.updateInfo(memberId, MemberInfoUpdateRequest("Kimmy", "kim001", "자기소개임"))
+            memberRegister.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "kim001", "자기소개임"))
 
             // 프로필 주소를 제거하는 것도 가능
-            memberRegister.updateInfo(memberId, MemberInfoUpdateRequest("Kimmy", "", "자기소개임"))
+            memberRegister.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "", "자기소개임"))
 
             // 프로필 주소 중복은 허용하지 않음
             shouldThrow<DuplicateProfileException> {
-                memberRegister.updateInfo(memberId, MemberInfoUpdateRequest("Kimmy", "kim002", "자기소개임"))
+                memberRegister.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "kim002", "자기소개임"))
             }
         }
 
-        test("memberRegisterRequestFail") {
-            checkValidation(MemberRegisterRequest("kim@splearn.app", "Kim", "secret1234"))
-            checkValidation(MemberRegisterRequest("kim@splearn.app", "KimLongNameSplearnTestCode", "secret1234"))
-            checkValidation(MemberRegisterRequest("kimsplearn.app", "KimLongName", "secret1234"))
-            checkValidation(MemberRegisterRequest("kim#splearn.app", "KimLongName", "secret"))
+        test("memberRegisterCommandFail") {
+            checkValidation(RegisterMemberCommand("kim@splearn.app", "Kim", "secret1234"))
+            checkValidation(RegisterMemberCommand("kim@splearn.app", "KimLongNameSplearnTestCode", "secret1234"))
+            checkValidation(RegisterMemberCommand("kimsplearn.app", "KimLongName", "secret1234"))
+            checkValidation(RegisterMemberCommand("kim#splearn.app", "KimLongName", "secret"))
         }
     }
 
-    private fun checkValidation(invalid: MemberRegisterRequest) {
+    private fun checkValidation(invalid: RegisterMemberCommand) {
         shouldThrow<ConstraintViolationException> { memberRegister.register(invalid) }
     }
 
-    private fun registerMember(): Member = memberRegister.register(MemberFixture.createMemberRegisterRequest())
+    private fun registerMember(): Member = memberRegister.register(MemberFixture.createRegisterMemberCommand())
 
     private fun registerMember(email: String): Member =
-        memberRegister.register(MemberFixture.createMemberRegisterRequest(email))
+        memberRegister.register(MemberFixture.createRegisterMemberCommand(email))
 }

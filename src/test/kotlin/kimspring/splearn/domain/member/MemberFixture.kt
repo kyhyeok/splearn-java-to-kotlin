@@ -1,10 +1,13 @@
 package kimspring.splearn.domain.member
 
-object MemberFixture {
-    fun createMemberRegisterRequest(email: String): MemberRegisterRequest =
-        MemberRegisterRequest(email, "KimHyeok", "verysecret")
+import kimspring.splearn.application.member.command.RegisterMemberCommand
+import kimspring.splearn.domain.shared.Email
 
-    fun createMemberRegisterRequest(): MemberRegisterRequest = createMemberRegisterRequest("kim@gmail.com")
+object MemberFixture {
+    fun createRegisterMemberCommand(email: String): RegisterMemberCommand =
+        RegisterMemberCommand(email, "KimHyeok", "verysecret")
+
+    fun createRegisterMemberCommand(): RegisterMemberCommand = createRegisterMemberCommand("kim@gmail.com")
 
     fun createPasswordEncoder(): PasswordEncoder =
         object : PasswordEncoder {
@@ -16,11 +19,15 @@ object MemberFixture {
             ): Boolean = encode(password) == passwordHash
         }
 
-    fun createMember(): Member = Member.register(createMemberRegisterRequest(), createPasswordEncoder())
+    fun createMember(): Member {
+        val command = createRegisterMemberCommand()
+        return Member.register(Email(command.email), command.nickname, command.password, createPasswordEncoder())
+    }
 
-    fun createMember(id: Long): Member =
-        Member.register(createMemberRegisterRequest(), createPasswordEncoder()).copy(id = id)
+    fun createMember(id: Long): Member = createMember().copy(id = id)
 
-    fun createMember(email: String): Member =
-        Member.register(createMemberRegisterRequest(email), createPasswordEncoder())
+    fun createMember(email: String): Member {
+        val command = createRegisterMemberCommand(email)
+        return Member.register(Email(command.email), command.nickname, command.password, createPasswordEncoder())
+    }
 }

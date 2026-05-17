@@ -6,9 +6,7 @@ import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import kimspring.splearn.domain.member.Member
-import kimspring.splearn.domain.member.MemberFixture.createMemberRegisterRequest
-import kimspring.splearn.domain.member.MemberFixture.createPasswordEncoder
+import kimspring.splearn.domain.member.MemberFixture.createMember
 import kimspring.splearn.domain.member.MemberStatus
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -25,7 +23,7 @@ class MemberRepositoryTest : FunSpec() {
         extension(SpringExtension())
 
         test("registerMember") {
-            val member = Member.register(createMemberRegisterRequest(), createPasswordEncoder())
+            val member = createMember()
 
             member.id.shouldBeNull()
 
@@ -41,11 +39,9 @@ class MemberRepositoryTest : FunSpec() {
         }
 
         test("duplicateEmailFail") {
-            val member = Member.register(createMemberRegisterRequest(), createPasswordEncoder())
-            memberRepository.save(member)
+            memberRepository.save(createMember())
 
-            val member2 = Member.register(createMemberRegisterRequest(), createPasswordEncoder())
-            shouldThrow<DataIntegrityViolationException> { memberRepository.save(member2) }
+            shouldThrow<DataIntegrityViolationException> { memberRepository.save(createMember()) }
         }
     }
 }
