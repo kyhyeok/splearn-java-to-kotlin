@@ -6,6 +6,7 @@ import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import kimspring.splearn.SplearnTestConfiguration
 import kimspring.splearn.domain.member.MemberFixture
+import kimspring.splearn.domain.member.MemberNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -33,7 +34,7 @@ class MemberFinderTest : FunSpec() {
         }
 
         test("findFail") {
-            shouldThrow<IllegalArgumentException> { memberFinder.find(9999L) }
+            shouldThrow<MemberNotFoundException> { memberFinder.find(9999L) }
         }
     }
 }

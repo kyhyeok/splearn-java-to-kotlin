@@ -11,6 +11,11 @@ spring:
     init:
       mode: never
 
+logging:
+  level:
+    root: WARN
+    kimspring.splearn: INFO
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

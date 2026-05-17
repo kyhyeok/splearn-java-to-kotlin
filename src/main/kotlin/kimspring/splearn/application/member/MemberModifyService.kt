@@ -1,5 +1,6 @@
 package kimspring.splearn.application.member
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
 import kimspring.splearn.application.member.port.EmailSender
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
 
+private val log = KotlinLogging.logger {}
+
 @Service
 @Transactional
 @Validated
@@ -30,6 +33,7 @@ class MemberModifyService(
         val member = Member.register(Email(command.email), command.nickname, command.password, passwordEncoder)
         val saved = memberRepository.save(member)
         sendWelcomeEmail(saved)
+        log.info { "회원 가입 완료: memberId=${saved.id}" }
         return saved
     }
 

@@ -8,6 +8,7 @@ import io.kotest.matchers.shouldBe
 import kimspring.splearn.domain.member.MemberFixture.createPasswordEncoder
 import kimspring.splearn.domain.member.MemberFixture.createRegisterMemberCommand
 import kimspring.splearn.domain.shared.Email
+import kimspring.splearn.domain.member.InvalidMemberStateException
 
 class MemberTest : FunSpec() {
     private lateinit var member: Member
@@ -35,7 +36,7 @@ class MemberTest : FunSpec() {
 
             member = member.activate()
 
-            shouldThrow<IllegalStateException> {
+            shouldThrow<InvalidMemberStateException> {
                 member.activate()
             }
 
@@ -51,11 +52,11 @@ class MemberTest : FunSpec() {
         }
 
         test("deactivateFail") {
-            shouldThrow<IllegalStateException> { member.deactivate() }
+            shouldThrow<InvalidMemberStateException> { member.deactivate() }
 
             member = member.activate()
             member = member.deactivate()
-            shouldThrow<IllegalStateException> { member.deactivate() }
+            shouldThrow<InvalidMemberStateException> { member.deactivate() }
         }
 
         test("verifyPassword") {
@@ -95,7 +96,7 @@ class MemberTest : FunSpec() {
         }
 
         test("updateInfoFail") {
-            shouldThrow<IllegalStateException> {
+            shouldThrow<InvalidMemberStateException> {
                 member.updateInfo("Hyeok", "kim001", "자기소개")
             }
         }

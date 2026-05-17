@@ -11,12 +11,12 @@ data class Member(
     val detail: MemberDetail,
 ) {
     fun activate(): Member {
-        check(status == MemberStatus.PENDING) { "PENDING 상태가 아닙니다." }
+        if (status != MemberStatus.PENDING) throw InvalidMemberStateException("PENDING 상태가 아닙니다.")
         return copy(status = MemberStatus.ACTIVE, detail = detail.recordActivation())
     }
 
     fun deactivate(): Member {
-        check(status == MemberStatus.ACTIVE) { "ACTIVE 상태가 아닙니다." }
+        if (status != MemberStatus.ACTIVE) throw InvalidMemberStateException("ACTIVE 상태가 아닙니다.")
         return copy(status = MemberStatus.DEACTIVATED, detail = detail.recordDeactivation())
     }
 
@@ -25,7 +25,7 @@ data class Member(
         profileAddress: String,
         introduction: String,
     ): Member {
-        check(status == MemberStatus.ACTIVE) { "등록 완료 상태가 아니면 정보를 수정할 수 없습니다." }
+        if (status != MemberStatus.ACTIVE) throw InvalidMemberStateException("등록 완료 상태가 아니면 정보를 수정할 수 없습니다.")
         return copy(nickname = nickname, detail = detail.updateInfo(profileAddress, introduction))
     }
 
