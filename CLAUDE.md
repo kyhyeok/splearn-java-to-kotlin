@@ -69,6 +69,19 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - No section banners, no decorative dividers, no docstrings for self-explanatory functions.
 - If a comment is needed to explain *what* the code does, rewrite the code instead.
 
+## 6. Code Quality Checks
+
+**소스 코드를 수정한 후에는 반드시 아래 순서로 검증한다.**
+
+```
+1. ./gradlew ktlintCheck   → 위반이 있으면 즉시 수정 후 재검증
+2. ./gradlew detekt        → 리포트를 읽고 주요 발견사항을 사용자에게 요약
+```
+
+- `ktlintCheck`가 실패하면 수정 없이 작업 완료를 선언하지 않는다.
+- `detekt`는 `ignoreFailures = true`라 빌드를 막지 않으므로 리포트를 직접 읽고 판단한다.
+- 단순 문서·설정 파일만 수정한 경우에는 생략 가능하다.
+
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
