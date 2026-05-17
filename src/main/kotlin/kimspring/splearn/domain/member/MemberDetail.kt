@@ -20,8 +20,10 @@ data class MemberDetail(
         return copy(deactivatedAt = LocalDateTime.now())
     }
 
-    fun updateInfo(profileAddress: String, introduction: String): MemberDetail =
-        copy(profile = Profile(profileAddress), introduction = introduction)
+    fun updateInfo(
+        profileAddress: String,
+        introduction: String,
+    ): MemberDetail = copy(profile = Profile(profileAddress), introduction = introduction)
 
     companion object {
         fun create(): MemberDetail = MemberDetail(registeredAt = LocalDateTime.now())

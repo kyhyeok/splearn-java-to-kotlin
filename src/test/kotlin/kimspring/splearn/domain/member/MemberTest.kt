@@ -5,10 +5,10 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import kimspring.splearn.domain.member.InvalidMemberStateException
 import kimspring.splearn.domain.member.MemberFixture.createPasswordEncoder
 import kimspring.splearn.domain.member.MemberFixture.createRegisterMemberCommand
 import kimspring.splearn.domain.shared.Email
-import kimspring.splearn.domain.member.InvalidMemberStateException
 
 class MemberTest : FunSpec() {
     private lateinit var member: Member

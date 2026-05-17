@@ -19,7 +19,6 @@ private val log = KotlinLogging.logger {}
 
 @ControllerAdvice
 class ApiControllerAdvice : ResponseEntityExceptionHandler() {
-
     @ExceptionHandler(SplearnException::class)
     fun handleSplearnException(e: SplearnException): ResponseEntity<ErrorResponse> {
         if (e.errorCode.status >= 500) {
