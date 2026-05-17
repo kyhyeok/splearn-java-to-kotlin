@@ -69,7 +69,20 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - No section banners, no decorative dividers, no docstrings for self-explanatory functions.
 - If a comment is needed to explain *what* the code does, rewrite the code instead.
 
-## 6. Code Quality Checks
+## 6. Test Execution
+
+**구현 완료 후 스스로 판단해서 테스트를 실행하고 결과를 보고한다.**
+
+```
+./gradlew test
+```
+
+- 소스 코드(도메인·애플리케이션·어댑터)를 추가하거나 수정한 경우 반드시 실행한다.
+- 테스트가 실패하면 원인을 파악하고 수정한 뒤 재실행한다. 실패 상태로 작업 완료를 선언하지 않는다.
+- 문서·설정 파일만 수정한 경우에는 생략 가능하다.
+- `/test` 스킬은 테스트 실행 명령어가 아니라 테스트 작성 가이드라인 로드용이다.
+
+## 7. Code Quality Checks
 
 **소스 코드를 수정한 후에는 아래를 실행한다.**
 
