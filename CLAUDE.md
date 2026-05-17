@@ -71,14 +71,13 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ## 6. Code Quality Checks
 
-**소스 코드를 수정한 후에는 반드시 아래 순서로 검증한다.**
+**소스 코드를 수정한 후에는 아래를 실행한다.**
 
 ```
-1. ./gradlew ktlintCheck   → 위반이 있으면 즉시 수정 후 재검증
-2. ./gradlew detekt        → 리포트를 읽고 주요 발견사항을 사용자에게 요약
+./gradlew detekt   → 리포트를 읽고 주요 발견사항을 사용자에게 요약
 ```
 
-- `ktlintCheck`가 실패하면 수정 없이 작업 완료를 선언하지 않는다.
+- `ktlintCheck`는 Stop hook이 자동으로 실행한다. 위반이 있으면 hook이 exit 2를 반환해 Claude가 강제로 수정을 이어간다.
 - `detekt`는 `ignoreFailures = true`라 빌드를 막지 않으므로 리포트를 직접 읽고 판단한다.
 - 단순 문서·설정 파일만 수정한 경우에는 생략 가능하다.
 

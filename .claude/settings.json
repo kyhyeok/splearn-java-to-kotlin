@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh '/Users/kimyoonhyeok/QR 베이스가 될 프로젝트/splearn-main/.claude/hooks/ktlint-check.sh'",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
