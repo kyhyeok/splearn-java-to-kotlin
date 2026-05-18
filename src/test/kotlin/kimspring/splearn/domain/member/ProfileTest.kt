@@ -10,10 +10,10 @@ class ProfileTest :
             Profile("kim")
             Profile("kim2")
             Profile("0044")
-            Profile("")
         }
 
         test("profileFail") {
+            shouldThrow<IllegalArgumentException> { Profile("") }
             shouldThrow<IllegalArgumentException> { Profile("toolongtoolongtoolong") }
             shouldThrow<IllegalArgumentException> { Profile("KIM") }
             shouldThrow<IllegalArgumentException> { Profile("킴") }

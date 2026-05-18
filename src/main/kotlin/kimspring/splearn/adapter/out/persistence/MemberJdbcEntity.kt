@@ -4,13 +4,12 @@ import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.MemberStatus
 import kimspring.splearn.domain.shared.Email
 import org.springframework.data.annotation.Id
-import org.springframework.data.relational.core.mapping.Embedded
 import org.springframework.data.relational.core.mapping.Table
 
 @Table("member")
 data class MemberJdbcEntity(
     @Id val id: Long? = null,
-    @Embedded.Empty(prefix = "email_") val email: Email,
+    val emailAddress: String,
     val nickname: String,
     val passwordHash: String,
     val status: MemberStatus,
@@ -19,7 +18,7 @@ data class MemberJdbcEntity(
     fun toDomain(): Member =
         Member(
             id = id,
-            email = email,
+            email = Email(emailAddress),
             nickname = nickname,
             passwordHash = passwordHash,
             status = status,
@@ -30,7 +29,7 @@ data class MemberJdbcEntity(
         fun from(member: Member): MemberJdbcEntity =
             MemberJdbcEntity(
                 id = member.id,
-                email = member.email,
+                emailAddress = member.email.address,
                 nickname = member.nickname,
                 passwordHash = member.passwordHash,
                 status = member.status,

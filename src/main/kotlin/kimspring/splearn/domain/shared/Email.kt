@@ -1,7 +1,7 @@
 package kimspring.splearn.domain.shared
 
 data class Email(
-    val address: String = "",
+    val address: String,
 ) {
     companion object {
         private val EMAIL_PATTERN =
@@ -11,10 +11,8 @@ data class Email(
     }
 
     init {
-        if (address.isNotEmpty()) {
-            require(EMAIL_PATTERN.matches(address)) {
-                "이메일 형식이 바르지 않습니다: $address"
-            }
+        require(EMAIL_PATTERN.matches(address)) {
+            "이메일 형식이 바르지 않습니다: $address"
         }
     }
 }
