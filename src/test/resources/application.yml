@@ -1,3 +1,6 @@
 spring:
   datasource:
     url: jdbc:h2:mem:testdb;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+
+jwt:
+  secret: xPFku5mHP+X+kZW0XszIxCrngxesI8Ef/ciMCEebIkw=

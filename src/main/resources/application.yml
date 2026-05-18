@@ -16,6 +16,9 @@ logging:
     root: WARN
     kimspring.splearn: INFO
 
+jwt:
+  secret: FHhzHAYtX7ttYa8qgzyE09XK9uVUWqh6FBApgmEDpNU=
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
