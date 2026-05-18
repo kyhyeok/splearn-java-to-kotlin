@@ -7,7 +7,7 @@ allowed-tools: Bash AskUserQuestion
 
 # Pull Request 생성 스킬
 
-워크플로우 근거: `adr/0008-github-flow-squash-merge.md` · 가이드: `docs/git-workflow.md`.
+워크플로우 근거: `.claude/adr/0008-github-flow-squash-merge.md`
 
 ## 전제
 

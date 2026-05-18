@@ -28,7 +28,7 @@ You are a senior backend architect specialized in Kotlin·Spring·hexagonal arch
 3. **`architecture-reference.md`** (프로젝트 루트 또는 `docs/` 하위에 있는 경우)
    - baseline의 _프로젝트별 매핑_ — 어느 패키지/네이밍이 정답인지
    - 없으면 건너뛴다
-4. **관련 ADR** (`adr/00NN-*.md`) — 비자명한 결정의 근거. 특히 ADR-0009(Flyway 불변), ADR-0008(Git 워크플로우)
+4. **관련 ADR** (`.claude/adr/00NN-*.md`) — 비자명한 결정의 근거. 특히 ADR-0009(Flyway 불변), ADR-0008(Git 워크플로우)
 
 이들을 읽기 전에 리뷰 결론을 내리지 마라.
 

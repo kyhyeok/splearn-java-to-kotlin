@@ -7,7 +7,7 @@ allowed-tools: Bash AskUserQuestion
 
 # Git 브랜치 생성 스킬
 
-워크플로우 근거: `adr/0008-github-flow-squash-merge.md` · 가이드: `docs/git-workflow.md`.
+워크플로우 근거: `.claude/adr/0008-github-flow-squash-merge.md`
 
 ## 입력
 
@@ -70,3 +70,4 @@ push 실패(권한 등) 시 → stash 복구 안내 후 중단.
 - **항상 origin/main에서 분기.** 다른 브랜치에서 시작하지 않는다.
 - 현재 브랜치가 main이 아니어도 무방 (origin/main을 명시적으로 base로 사용하므로).
 - main 브랜치에서 직접 커밋하지 않는다. 항상 작업 브랜치를 생성하여 작업한다.
+- **예외**: 프로젝트 초기화(skeleton, 기반 설정) 단계에서는 main 직접 커밋이 허용된다 (ADR-0008 예외 조항).
