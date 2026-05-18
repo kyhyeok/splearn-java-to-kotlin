@@ -23,10 +23,11 @@ data class MemberDetail(
     fun updateInfo(
         profileAddress: String,
         introduction: String,
-    ): MemberDetail = copy(
-        profile = if (profileAddress.isNotEmpty()) Profile(profileAddress) else null,
-        introduction = introduction,
-    )
+    ): MemberDetail =
+        copy(
+            profile = if (profileAddress.isNotEmpty()) Profile(profileAddress) else null,
+            introduction = introduction,
+        )
 
     companion object {
         fun create(now: LocalDateTime): MemberDetail = MemberDetail(registeredAt = now)
