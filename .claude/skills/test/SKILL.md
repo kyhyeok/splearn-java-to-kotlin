@@ -1,6 +1,6 @@
 ---
 name: test
-description: splearn 프로젝트 테스트 작성 규칙. 테스트 코드를 새로 작성하거나 수정할 때, 어떤 계층의 테스트를 어떤 방식으로 짜야 할지 결정할 때 참조한다. Kotest FunSpec + MockK + MockMvcTester 패턴을 이 프로젝트의 실제 파일 기준으로 정의한다.
+description: splearn 프로젝트 테스트 작성 규칙. 테스트 코드를 새로 작성하거나 수정할 때, 어떤 계층의 테스트를 어떤 방식으로 짜야 할지 결정할 때 참조한다. Kotest FunSpec + MockK + MockMvcTester 패턴을 이 프로젝트의 실제 파일 기준으로 정의한다. "테스트", "Test", "FunSpec", "MockK", "MockMvcTester", "단위 테스트", "통합 테스트", "WebMvcTest", "Fixture", "Konsist", "SplearnTestConfiguration" 같은 키워드가 등장하거나, 새 테스트 파일·Fixture·아키텍처 테스트를 작성하거나, 소스 코드 변경 후 테스트를 추가하거나, 기존 테스트를 계층 패턴에 맞게 수정하는 작업이라면 적용 대상이다. 사용자가 명시적으로 부르지 않더라도 위 작업 중에는 이 스킬을 자동으로 적용하라.
 ---
 
 # 테스트 작성 규칙 — splearn
