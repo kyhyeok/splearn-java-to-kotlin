@@ -9,16 +9,18 @@ import kimspring.splearn.domain.member.InvalidMemberStateException
 import kimspring.splearn.domain.member.MemberFixture.createPasswordEncoder
 import kimspring.splearn.domain.member.MemberFixture.createRegisterMemberCommand
 import kimspring.splearn.domain.shared.Email
+import java.time.LocalDateTime
 
 class MemberTest : FunSpec() {
     private lateinit var member: Member
     private lateinit var passwordEncoder: PasswordEncoder
+    private val now = LocalDateTime.of(2024, 1, 1, 0, 0)
 
     init {
         beforeEach {
             passwordEncoder = createPasswordEncoder()
             val command = createRegisterMemberCommand()
-            member = Member.register(Email(command.email), command.nickname, command.password, passwordEncoder)
+            member = Member.register(Email(command.email), command.nickname, command.password, passwordEncoder, now)
         }
 
         test("registerMember") {
@@ -27,36 +29,36 @@ class MemberTest : FunSpec() {
         }
 
         test("activate") {
-            member = member.activate()
+            member = member.activate(now)
             member.status shouldBe MemberStatus.ACTIVE
         }
 
         test("activateFail") {
             member.detail.activatedAt.shouldBeNull()
 
-            member = member.activate()
+            member = member.activate(now)
 
             shouldThrow<InvalidMemberStateException> {
-                member.activate()
+                member.activate(now)
             }
 
             member.detail.activatedAt.shouldNotBeNull()
         }
 
         test("deactivate") {
-            member = member.activate()
-            member = member.deactivate()
+            member = member.activate(now)
+            member = member.deactivate(now)
 
             member.status shouldBe MemberStatus.DEACTIVATED
             member.detail.deactivatedAt.shouldNotBeNull()
         }
 
         test("deactivateFail") {
-            shouldThrow<InvalidMemberStateException> { member.deactivate() }
+            shouldThrow<InvalidMemberStateException> { member.deactivate(now) }
 
-            member = member.activate()
-            member = member.deactivate()
-            shouldThrow<InvalidMemberStateException> { member.deactivate() }
+            member = member.activate(now)
+            member = member.deactivate(now)
+            shouldThrow<InvalidMemberStateException> { member.deactivate(now) }
         }
 
         test("verifyPassword") {
@@ -71,22 +73,22 @@ class MemberTest : FunSpec() {
 
         test("isActive") {
             member.isActive() shouldBe false
-            member = member.activate()
+            member = member.activate(now)
             member.isActive() shouldBe true
-            member = member.deactivate()
+            member = member.deactivate(now)
             member.isActive() shouldBe false
         }
 
         test("invalidEmail") {
             shouldThrow<IllegalArgumentException> {
-                Member.register(Email("invaluid email"), "KimHyeok", "verysecret", passwordEncoder)
+                Member.register(Email("invaluid email"), "KimHyeok", "verysecret", passwordEncoder, now)
             }
 
-            Member.register(Email("kim@gmail.com"), "KimHyeok", "verysecret", passwordEncoder)
+            Member.register(Email("kim@gmail.com"), "KimHyeok", "verysecret", passwordEncoder, now)
         }
 
         test("updateInfo") {
-            member = member.activate()
+            member = member.activate(now)
 
             member = member.updateInfo("Hyeok", "kim001", "자기소개")
 

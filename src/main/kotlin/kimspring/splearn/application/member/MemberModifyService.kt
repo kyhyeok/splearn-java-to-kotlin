@@ -12,6 +12,7 @@ import kimspring.splearn.domain.member.DuplicateProfileException
 import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.PasswordEncoder
 import kimspring.splearn.domain.member.Profile
+import kimspring.splearn.domain.shared.Clock
 import kimspring.splearn.domain.shared.Email
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -27,10 +28,18 @@ class MemberModifyService(
     private val memberRepository: MemberRepository,
     private val emailSender: EmailSender,
     private val passwordEncoder: PasswordEncoder,
+    private val clock: Clock,
 ) : MemberRegister {
     override fun register(command: RegisterMemberCommand): Member {
         checkDuplicateEmail(command)
-        val member = Member.register(Email(command.email), command.nickname, command.password, passwordEncoder)
+        val member =
+            Member.register(
+                email = Email(command.email),
+                nickname = command.nickname,
+                password = command.password,
+                encoder = passwordEncoder,
+                now = clock.now(),
+            )
         val saved = memberRepository.save(member)
         sendWelcomeEmail(saved)
         log.info { "회원 가입 완료: memberId=${saved.id}" }
@@ -39,12 +48,12 @@ class MemberModifyService(
 
     override fun activate(memberId: Long): Member {
         val member = memberFinder.find(memberId)
-        return memberRepository.save(member.activate())
+        return memberRepository.save(member.activate(clock.now()))
     }
 
     override fun deactivate(memberId: Long): Member {
         val member = memberFinder.find(memberId)
-        return memberRepository.save(member.deactivate())
+        return memberRepository.save(member.deactivate(clock.now()))
     }
 
     override fun updateInfo(

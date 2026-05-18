@@ -1,6 +1,7 @@
 package kimspring.splearn.domain.member
 
 import kimspring.splearn.domain.shared.Email
+import java.time.LocalDateTime
 
 data class Member(
     val id: Long? = null,
@@ -10,14 +11,14 @@ data class Member(
     val status: MemberStatus,
     val detail: MemberDetail,
 ) {
-    fun activate(): Member {
+    fun activate(now: LocalDateTime): Member {
         if (status != MemberStatus.PENDING) throw InvalidMemberStateException("PENDING 상태가 아닙니다.")
-        return copy(status = MemberStatus.ACTIVE, detail = detail.recordActivation())
+        return copy(status = MemberStatus.ACTIVE, detail = detail.recordActivation(now))
     }
 
-    fun deactivate(): Member {
+    fun deactivate(now: LocalDateTime): Member {
         if (status != MemberStatus.ACTIVE) throw InvalidMemberStateException("ACTIVE 상태가 아닙니다.")
-        return copy(status = MemberStatus.DEACTIVATED, detail = detail.recordDeactivation())
+        return copy(status = MemberStatus.DEACTIVATED, detail = detail.recordDeactivation(now))
     }
 
     fun updateInfo(
@@ -47,13 +48,14 @@ data class Member(
             nickname: String,
             password: String,
             encoder: PasswordEncoder,
+            now: LocalDateTime,
         ): Member =
             Member(
                 email = email,
                 nickname = nickname,
                 passwordHash = encoder.encode(password),
                 status = MemberStatus.PENDING,
-                detail = MemberDetail.create(),
+                detail = MemberDetail.create(now),
             )
     }
 }

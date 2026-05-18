@@ -10,14 +10,14 @@ data class MemberDetail(
     val activatedAt: LocalDateTime? = null,
     val deactivatedAt: LocalDateTime? = null,
 ) {
-    fun recordActivation(): MemberDetail {
+    fun recordActivation(now: LocalDateTime): MemberDetail {
         check(activatedAt == null) { "이미 activatedAt은 설정되었습니다" }
-        return copy(activatedAt = LocalDateTime.now())
+        return copy(activatedAt = now)
     }
 
-    fun recordDeactivation(): MemberDetail {
+    fun recordDeactivation(now: LocalDateTime): MemberDetail {
         check(deactivatedAt == null) { "이미 deactivatedAt은 설정되었습니다" }
-        return copy(deactivatedAt = LocalDateTime.now())
+        return copy(deactivatedAt = now)
     }
 
     fun updateInfo(
@@ -26,6 +26,6 @@ data class MemberDetail(
     ): MemberDetail = copy(profile = Profile(profileAddress), introduction = introduction)
 
     companion object {
-        fun create(): MemberDetail = MemberDetail(registeredAt = LocalDateTime.now())
+        fun create(now: LocalDateTime): MemberDetail = MemberDetail(registeredAt = now)
     }
 }
