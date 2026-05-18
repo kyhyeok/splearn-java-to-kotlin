@@ -9,6 +9,7 @@ import jakarta.validation.ConstraintViolationException
 import kimspring.splearn.SplearnTestConfiguration
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
+import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.domain.member.DuplicateEmailException
 import kimspring.splearn.domain.member.DuplicateProfileException
 import kimspring.splearn.domain.member.Member
@@ -25,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional
 class MemberRegisterTest : FunSpec() {
     @Autowired
     private lateinit var memberRegister: MemberRegister
+
+    @Autowired
+    private lateinit var memberModifier: MemberModifier
 
     init {
         extension(SpringExtension())
@@ -68,7 +72,7 @@ class MemberRegisterTest : FunSpec() {
             val activated = memberRegister.activate(member.id!!)
 
             val command = UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개")
-            val updated = memberRegister.updateInfo(activated.id!!, command)
+            val updated = memberModifier.updateInfo(activated.id!!, command)
 
             updated.detail.profile!!.address shouldBe command.profileAddress
         }
@@ -76,28 +80,28 @@ class MemberRegisterTest : FunSpec() {
         test("updateInfoFail") {
             val memberId = requireNotNull(registerMember().id)
             memberRegister.activate(memberId)
-            memberRegister.updateInfo(memberId, UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개"))
+            memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개"))
 
             val member2Id = requireNotNull(registerMember("kiim@splearn.app").id)
             memberRegister.activate(member2Id)
 
             // member2는 기존의 member와 같은 프로필 주소를 사용할 수 없다
             shouldThrow<DuplicateProfileException> {
-                memberRegister.updateInfo(member2Id, UpdateMemberInfoCommand("Kimmy", "kim001", "자기소개임"))
+                memberModifier.updateInfo(member2Id, UpdateMemberInfoCommand("Kimmy", "kim001", "자기소개임"))
             }
 
             // 다른 프로필 주소로는 변경 가능
-            memberRegister.updateInfo(member2Id, UpdateMemberInfoCommand("Kimmy", "kim002", "자기소개임"))
+            memberModifier.updateInfo(member2Id, UpdateMemberInfoCommand("Kimmy", "kim002", "자기소개임"))
 
             // 기존 프로필 주소를 바꾸는 것도 가능
-            memberRegister.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "kim001", "자기소개임"))
+            memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "kim001", "자기소개임"))
 
             // 프로필 주소를 제거하는 것도 가능
-            memberRegister.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "", "자기소개임"))
+            memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "", "자기소개임"))
 
             // 프로필 주소 중복은 허용하지 않음
             shouldThrow<DuplicateProfileException> {
-                memberRegister.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "kim002", "자기소개임"))
+                memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "kim002", "자기소개임"))
             }
         }
 

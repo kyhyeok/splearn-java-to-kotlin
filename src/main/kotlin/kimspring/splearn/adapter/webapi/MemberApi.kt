@@ -8,6 +8,7 @@ import kimspring.splearn.adapter.webapi.dto.MemberRegisterResponse
 import kimspring.splearn.adapter.webapi.dto.MemberResponse
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
+import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.application.member.usecase.MemberRegister
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class MemberApi(
     private val memberRegister: MemberRegister,
+    private val memberModifier: MemberModifier,
 ) {
     @Operation(summary = "회원 가입")
     @ApiResponse(responseCode = "409", description = "이메일 중복")
@@ -48,5 +50,5 @@ class MemberApi(
     fun updateInfo(
         @PathVariable memberId: Long,
         @RequestBody @Valid request: UpdateMemberInfoCommand,
-    ): MemberResponse = MemberResponse.of(memberRegister.updateInfo(memberId, request))
+    ): MemberResponse = MemberResponse.of(memberModifier.updateInfo(memberId, request))
 }

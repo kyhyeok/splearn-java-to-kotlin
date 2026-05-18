@@ -8,6 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
+import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.member.MemberFixture
 import org.assertj.core.api.Assertions.assertThat
@@ -26,6 +27,9 @@ class MemberApiWebMvcTest : FunSpec() {
     class Config {
         @Bean
         fun memberRegister(): MemberRegister = mockk()
+
+        @Bean
+        fun memberModifier(): MemberModifier = mockk()
     }
 
     @Autowired
@@ -36,6 +40,9 @@ class MemberApiWebMvcTest : FunSpec() {
 
     @Autowired
     private lateinit var memberRegister: MemberRegister
+
+    @Autowired
+    private lateinit var memberModifier: MemberModifier
 
     init {
         extension(SpringExtension())
@@ -116,7 +123,7 @@ class MemberApiWebMvcTest : FunSpec() {
             val memberId = 1L
             val member = MemberFixture.createMember(memberId)
             val request = UpdateMemberInfoCommand("validNick", "profile", "introduction")
-            every { memberRegister.updateInfo(memberId, request) } returns member
+            every { memberModifier.updateInfo(memberId, request) } returns member
 
             val requestJson = objectMapper.writeValueAsString(request)
 
@@ -132,7 +139,7 @@ class MemberApiWebMvcTest : FunSpec() {
                 .asNumber()
                 .isEqualTo(memberId.toInt())
 
-            verify { memberRegister.updateInfo(memberId, request) }
+            verify { memberModifier.updateInfo(memberId, request) }
         }
 
         test("updateInfoFail") {

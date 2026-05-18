@@ -2,7 +2,6 @@ package kimspring.splearn.application.member.usecase
 
 import jakarta.validation.Valid
 import kimspring.splearn.application.member.command.RegisterMemberCommand
-import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
 import kimspring.splearn.domain.member.Member
 
 /**
@@ -16,9 +15,4 @@ interface MemberRegister {
     fun activate(memberId: Long): Member
 
     fun deactivate(memberId: Long): Member
-
-    fun updateInfo(
-        memberId: Long,
-        @Valid command: UpdateMemberInfoCommand,
-    ): Member
 }
