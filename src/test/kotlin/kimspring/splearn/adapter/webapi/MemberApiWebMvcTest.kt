@@ -8,6 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
+import kimspring.splearn.application.member.usecase.MemberLifecycle
 import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.member.MemberFixture
@@ -29,6 +30,9 @@ class MemberApiWebMvcTest : FunSpec() {
         fun memberRegister(): MemberRegister = mockk()
 
         @Bean
+        fun memberLifecycle(): MemberLifecycle = mockk()
+
+        @Bean
         fun memberModifier(): MemberModifier = mockk()
     }
 
@@ -40,6 +44,9 @@ class MemberApiWebMvcTest : FunSpec() {
 
     @Autowired
     private lateinit var memberRegister: MemberRegister
+
+    @Autowired
+    private lateinit var memberLifecycle: MemberLifecycle
 
     @Autowired
     private lateinit var memberModifier: MemberModifier
@@ -88,7 +95,7 @@ class MemberApiWebMvcTest : FunSpec() {
         test("activate") {
             val memberId = 1L
             val member = MemberFixture.createMember(memberId)
-            every { memberRegister.activate(memberId) } returns member
+            every { memberLifecycle.activate(memberId) } returns member
 
             assertThat(
                 mvcTester
@@ -100,13 +107,13 @@ class MemberApiWebMvcTest : FunSpec() {
                 .asNumber()
                 .isEqualTo(memberId.toInt())
 
-            verify { memberRegister.activate(memberId) }
+            verify { memberLifecycle.activate(memberId) }
         }
 
         test("deactivate") {
             val memberId = 1L
             val member = MemberFixture.createMember(memberId)
-            every { memberRegister.deactivate(memberId) } returns member
+            every { memberLifecycle.deactivate(memberId) } returns member
 
             assertThat(
                 mvcTester
@@ -118,7 +125,7 @@ class MemberApiWebMvcTest : FunSpec() {
                 .asNumber()
                 .isEqualTo(memberId.toInt())
 
-            verify { memberRegister.deactivate(memberId) }
+            verify { memberLifecycle.deactivate(memberId) }
         }
 
         test("updateInfo") {

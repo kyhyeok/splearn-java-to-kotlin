@@ -9,6 +9,7 @@ import jakarta.validation.ConstraintViolationException
 import kimspring.splearn.SplearnTestConfiguration
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
+import kimspring.splearn.application.member.usecase.MemberLifecycle
 import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.domain.member.DuplicateEmailException
 import kimspring.splearn.domain.member.DuplicateProfileException
@@ -26,6 +27,9 @@ import org.springframework.transaction.annotation.Transactional
 class MemberRegisterTest : FunSpec() {
     @Autowired
     private lateinit var memberRegister: MemberRegister
+
+    @Autowired
+    private lateinit var memberLifecycle: MemberLifecycle
 
     @Autowired
     private lateinit var memberModifier: MemberModifier
@@ -51,7 +55,7 @@ class MemberRegisterTest : FunSpec() {
         test("activate") {
             val member = registerMember()
 
-            val activated = memberRegister.activate(member.id!!)
+            val activated = memberLifecycle.activate(member.id!!)
 
             activated.status shouldBe MemberStatus.ACTIVE
             activated.detail.activatedAt.shouldNotBeNull()
@@ -60,8 +64,8 @@ class MemberRegisterTest : FunSpec() {
         test("deactivate") {
             val member = registerMember()
 
-            val activated = memberRegister.activate(member.id!!)
-            val deactivated = memberRegister.deactivate(activated.id!!)
+            val activated = memberLifecycle.activate(member.id!!)
+            val deactivated = memberLifecycle.deactivate(activated.id!!)
 
             deactivated.status shouldBe MemberStatus.DEACTIVATED
             deactivated.detail.deactivatedAt.shouldNotBeNull()
@@ -69,7 +73,7 @@ class MemberRegisterTest : FunSpec() {
 
         test("updateInfo") {
             val member = registerMember()
-            val activated = memberRegister.activate(member.id!!)
+            val activated = memberLifecycle.activate(member.id!!)
 
             val command = UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개")
             val updated = memberModifier.updateInfo(activated.id!!, command)
@@ -79,11 +83,11 @@ class MemberRegisterTest : FunSpec() {
 
         test("updateInfoFail") {
             val memberId = requireNotNull(registerMember().id)
-            memberRegister.activate(memberId)
+            memberLifecycle.activate(memberId)
             memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개"))
 
             val member2Id = requireNotNull(registerMember("kiim@splearn.app").id)
-            memberRegister.activate(member2Id)
+            memberLifecycle.activate(member2Id)
 
             // member2는 기존의 member와 같은 프로필 주소를 사용할 수 없다
             shouldThrow<DuplicateProfileException> {

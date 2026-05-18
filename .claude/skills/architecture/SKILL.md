@@ -57,6 +57,7 @@ kimspring.splearn
 | 역할 | 패턴 | 예 |
 |---|---|---|
 | 등록/생성 | `{Ctx}Register` | `MemberRegister` |
+| 생명주기 전이 | `{Ctx}Lifecycle` | `MemberLifecycle` |
 | 수정 | `{Ctx}Modifier` | `MemberModifier` |
 | 조회 | `{Ctx}Finder` | `MemberFinder` |
 | 삭제 | `{Ctx}Remover` | `MemberRemover` |
@@ -129,7 +130,11 @@ class MemberNotFoundException : SplearnException(ErrorCode.MEMBER_NOT_FOUND)
 // ✅ 인터페이스 (application.member.usecase)
 interface MemberRegister {
     fun register(cmd: RegisterMemberCommand): Member
+}
+
+interface MemberLifecycle {
     fun activate(memberId: Long): Member
+    fun deactivate(memberId: Long): Member
 }
 
 // ✅ 구현체 (application.member)

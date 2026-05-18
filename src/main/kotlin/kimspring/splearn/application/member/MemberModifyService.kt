@@ -5,6 +5,7 @@ import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
 import kimspring.splearn.application.member.port.EmailSender
 import kimspring.splearn.application.member.port.MemberRepository
+import kimspring.splearn.application.member.usecase.MemberLifecycle
 import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.member.DuplicateEmailException
@@ -29,6 +30,7 @@ class MemberModifyService(
     private val passwordEncoder: PasswordEncoder,
     private val clock: Clock,
 ) : MemberRegister,
+    MemberLifecycle,
     MemberModifier {
     override fun register(command: RegisterMemberCommand): Member {
         checkDuplicateEmail(command)
