@@ -1,73 +1,73 @@
 # CLAUDE.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+LLM의 흔한 코딩 실수를 줄이기 위한 행동 지침.
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+**트레이드오프:** 이 지침은 속도보다 신중함을 우선한다. 사소한 작업은 판단해서 적용한다.
 
-## 1. Think Before Coding
+## 1. 코딩 전에 생각하라
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+**추측하지 않는다. 혼란을 숨기지 않는다. 트레이드오프를 드러낸다.**
 
-Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+구현 전:
+- 가정을 명시적으로 밝힌다. 불확실하면 묻는다.
+- 해석이 여러 가지라면 제시한다 — 조용히 하나를 고르지 않는다.
+- 더 단순한 방법이 있으면 말한다. 필요하면 반론한다.
+- 불명확한 것이 있으면 멈춘다. 무엇이 혼란스러운지 말하고 묻는다.
 
-## 2. Simplicity First
+## 2. 단순함 우선
 
-**Minimum code that solves the problem. Nothing speculative.**
+**문제를 푸는 최소한의 코드만. 추측성 코드는 없다.**
 
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
-- No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
+- 요청 이상의 기능은 넣지 않는다.
+- 단일 용도 코드에 추상화를 만들지 않는다.
+- 요청하지 않은 "유연성"이나 "설정 가능성"을 추가하지 않는다.
+- 발생 불가능한 시나리오에 대한 에러 처리는 넣지 않는다.
+- 200줄로 썼는데 50줄로 가능하다면 다시 쓴다.
 
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+자문: "시니어 엔지니어가 이 코드를 과도하다고 할까?" 그렇다면 단순하게 만든다.
 
-## 3. Surgical Changes
+## 3. 외과적 변경
 
-**Touch only what you must. Clean up only your own mess.**
+**반드시 건드려야 할 것만 건드린다. 자신이 만든 것만 정리한다.**
 
-When editing existing code:
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
+기존 코드 편집 시:
+- 인접한 코드·주석·포맷을 "개선"하지 않는다.
+- 문제없는 것을 리팩토링하지 않는다.
+- 다르게 하고 싶어도 기존 스타일에 맞춘다.
+- 관련 없는 데드 코드를 발견하면 언급만 한다 — 삭제하지 않는다.
 
-When your changes create orphans:
-- Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
+변경으로 인해 사용되지 않게 된 것:
+- 자신의 변경이 만든 미사용 import·변수·함수는 제거한다.
+- 기존 데드 코드는 요청이 없으면 제거하지 않는다.
 
-The test: Every changed line should trace directly to the user's request.
+기준: 변경된 모든 줄이 사용자의 요청으로 직접 추적 가능해야 한다.
 
-## 4. Goal-Driven Execution
+## 4. 목표 중심 실행
 
-**Define success criteria. Loop until verified.**
+**성공 기준을 정의한다. 검증될 때까지 반복한다.**
 
-Transform tasks into verifiable goals:
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
+작업을 검증 가능한 목표로 바꾼다:
+- "유효성 검사 추가" → "잘못된 입력에 대한 테스트를 작성하고 통과시킨다"
+- "버그 수정" → "버그를 재현하는 테스트를 작성하고 통과시킨다"
+- "X 리팩토링" → "리팩토링 전후로 테스트가 통과함을 확인한다"
 
-For multi-step tasks, state a brief plan:
+여러 단계 작업은 간단한 계획을 먼저 밝힌다:
 ```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
+1. [단계] → 검증: [확인 방법]
+2. [단계] → 검증: [확인 방법]
+3. [단계] → 검증: [확인 방법]
 ```
 
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+명확한 성공 기준이 있으면 독립적으로 반복할 수 있다. 모호한 기준("작동하게 만들어")은 계속 확인을 요구한다.
 
-## 5. Minimal Comments
+## 5. 최소한의 주석
 
-**Only when necessary. One line, two at most.**
+**꼭 필요할 때만. 한 줄, 최대 두 줄.**
 
-- Don't restate what the code already says.
-- Comment the *why*, not the *what* - and only when non-obvious.
-- No section banners, no decorative dividers, no docstrings for self-explanatory functions.
-- If a comment is needed to explain *what* the code does, rewrite the code instead.
+- 코드가 이미 말하는 것을 반복하지 않는다.
+- *무엇*이 아니라 *왜*를 주석으로 — 그것도 명백하지 않을 때만.
+- 섹션 배너·장식용 구분선·자명한 함수의 docstring은 쓰지 않는다.
+- *무엇*을 설명하기 위해 주석이 필요하다면 코드를 다시 쓴다.
 
 ## 6. Test Execution
 
@@ -96,4 +96,4 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+**이 지침이 잘 작동하고 있다면:** diff에 불필요한 변경이 줄고, 과도한 복잡성으로 인한 재작성이 줄고, 실수 후가 아니라 구현 전에 명확한 질문이 나온다.
