@@ -1,81 +1,81 @@
 ---
 name: kotlin-conventions
-description: Pure Kotlin (non-Android) coding conventions for code generation and code review. Use whenever .kt files are written, edited, or reviewed; whenever Kotlin naming, formatting, modifier order, or idioms come up; whenever the user mentions "Kotlin convention", "Kotlin style", "Kotlin naming", "val vs var", "scope functions", "expression body", or any Kotlin-specific style question. Faithful to kotlinlang.org/docs/coding-conventions.html — no team-specific additions.
+description: .kt 파일을 작성·편집·리뷰할 때마다 적용하는 순수 Kotlin(비안드로이드) 코딩 컨벤션. 네이밍, 포맷팅, 수정자 순서, 관용 표현, val vs var, 스코프 함수, 표현식 바디, "Kotlin 컨벤션/스타일/네이밍" 관련 질문에 자동 적용. kotlinlang.org/docs/coding-conventions.html 기준 — 팀 자체 추가 규칙 없음.
 ---
 
-# Kotlin Conventions
+# Kotlin 컨벤션
 
-Faithful summary of the official style guide. Source: https://kotlinlang.org/docs/coding-conventions.html
+공식 스타일 가이드 충실 요약. 출처: https://kotlinlang.org/docs/coding-conventions.html
 
-**Tradeoff:** Bias toward what the official docs say. Don't invent local rules.
+**트레이드오프:** 공식 문서 기준을 따른다. 로컬 규칙을 임의로 만들지 않는다.
 
-## 1. Naming
+## 1. 네이밍
 
-**Names follow the language, not the developer's preference.**
+**이름은 개발자 취향이 아니라 언어 관례를 따른다.**
 
-- Packages: `lowercase`, no underscores. Multi-word discouraged; if unavoidable, concatenate or `camelCase`.
-- Classes / objects: `UpperCamelCase`.
-- Functions / properties / locals: `lowerCamelCase`.
-- Constants (`const val`, top-level / object `val` of deeply immutable data): `SCREAMING_SNAKE_CASE`.
-- Top-level / object `val` holding behavior or mutable data: `camelCase`.
-- `val` holding a singleton: same as `object` (`UpperCamelCase`).
-- Enum constants: `SCREAMING_SNAKE_CASE` or `UpperCamelCase` — pick per use.
-- Backing property: `_camelCase` (private), exposed as `camelCase`.
-- Acronyms: 2 letters → all caps (`IOStream`); 3+ → first letter only (`XmlFormatter`, `HttpInputStream`).
-- Factory function with same name as the abstract type it returns is allowed (`fun Foo(): Foo`).
-- Tests only: backticked method names with spaces, or underscores, are allowed.
+- 패키지: `lowercase`, 언더스코어 없음. 다중 단어는 지양; 불가피하면 연결하거나 `camelCase`.
+- 클래스 / 오브젝트: `UpperCamelCase`.
+- 함수 / 프로퍼티 / 로컬: `lowerCamelCase`.
+- 상수 (`const val`, 완전 불변 데이터의 최상위 / 오브젝트 `val`): `SCREAMING_SNAKE_CASE`.
+- 동작 또는 변경 가능 데이터를 담는 최상위 / 오브젝트 `val`: `camelCase`.
+- 싱글턴을 담는 `val`: 오브젝트와 동일 (`UpperCamelCase`).
+- 열거 상수: `SCREAMING_SNAKE_CASE` 또는 `UpperCamelCase` — 용도에 맞게 선택.
+- 백킹 프로퍼티: `_camelCase` (private), `camelCase`로 공개.
+- 약어: 2글자 → 모두 대문자 (`IOStream`); 3글자 이상 → 첫 글자만 대문자 (`XmlFormatter`, `HttpInputStream`).
+- 반환하는 추상 타입과 이름이 같은 팩토리 함수는 허용 (`fun Foo(): Foo`).
+- 테스트 한정: 공백을 포함한 백틱 메서드명, 언더스코어 허용.
 
-**Semantic naming.**
+**의미 있는 네이밍.**
 
-- Class = noun or noun phrase (`List`, `PersonReader`).
-- Function = verb or verb phrase (`close`, `readPersons`).
-- Mutation vs copy: `sort` (in place) vs `sorted` (returns copy). Match this pattern.
-- Avoid meaningless words: `Manager`, `Wrapper`, `Util`.
+- 클래스 = 명사 또는 명사구 (`List`, `PersonReader`).
+- 함수 = 동사 또는 동사구 (`close`, `readPersons`).
+- 제자리 변경 vs 복사 반환: `sort` (제자리) vs `sorted` (복사 반환). 이 패턴을 따른다.
+- 의미 없는 단어 사용 금지: `Manager`, `Wrapper`, `Util`.
 
-## 2. Source Organization
+## 2. 소스 구성
 
-**File name = what's in the file.**
+**파일명 = 파일 내용.**
 
-- Single class/interface → file name matches the class (`Foo.kt`).
-- Multiple declarations or top-level only → name describing contents in `UpperCamelCase` (`ProcessDeclarations.kt`).
-- Multiplatform: platform-specific top-level declarations get a suffix (`Platform.jvm.kt`, `Platform.ios.kt`); common stays unsuffixed (`Platform.kt`).
+- 단일 클래스/인터페이스 → 파일명이 클래스명과 일치 (`Foo.kt`).
+- 여러 선언 또는 최상위 전용 → 내용을 설명하는 `UpperCamelCase` 이름 (`ProcessDeclarations.kt`).
+- 멀티플랫폼: 플랫폼별 최상위 선언은 접미사 추가 (`Platform.jvm.kt`, `Platform.ios.kt`); 공통은 접미사 없음 (`Platform.kt`).
 
-Multiple related declarations in one file are encouraged, as long as the file stays within a few hundred lines.
+파일이 수백 줄 이내라면 관련 선언을 한 파일에 모아도 된다.
 
-**Class layout — fixed order:**
+**클래스 레이아웃 — 고정 순서:**
 
-1. Property declarations and initializer blocks
-2. Secondary constructors
-3. Method declarations
-4. Companion object
+1. 프로퍼티 선언 및 초기화 블록
+2. 보조 생성자
+3. 메서드 선언
+4. 컴패니언 오브젝트
 
-Group related methods together. **Do not** sort alphabetically or by visibility, and do not separate regular methods from extension methods. Pick one direction (high-level first, or vice versa) and stick to it.
+관련 메서드는 묶는다. 알파벳 순·가시성 순으로 정렬하거나, 일반 메서드와 확장 메서드를 분리하지 않는다. 방향(고수준 먼저 또는 반대)을 정하고 일관성을 유지한다.
 
-Nested classes go next to the code that uses them; nested classes used only externally go after the companion object.
+중첩 클래스는 사용하는 코드 옆에 배치; 외부에서만 쓰이는 중첩 클래스는 컴패니언 오브젝트 뒤에.
 
-**Interface implementations:** keep member order matching the interface.
-**Overloads:** always adjacent.
+**인터페이스 구현:** 인터페이스 멤버 순서를 유지한다.
+**오버로드:** 항상 인접하게 배치.
 
-## 3. Formatting
+## 3. 포맷팅
 
-**Indent: 4 spaces. No tabs. Java-style braces.**
+**들여쓰기: 4 스페이스. 탭 금지. Java 스타일 중괄호.**
 
-Opening brace at end of line, closing brace aligned with the construct's start.
+여는 중괄호는 줄 끝, 닫는 중괄호는 구문 시작과 정렬.
 
-**Whitespace:**
+**공백:**
 
-- Around binary operators (`a + b`). Exception: no spaces around `..` (`0..i`).
-- After `if` / `when` / `for` / `while` keyword, before `(`.
-- NOT before `(` of constructor / method declaration or call.
-- NOT after `(` or `[`; NOT before `]` or `)`.
-- NOT around `.`, `?.`, `::`, type angle brackets, nullable `?`.
-- NOT around unary operators (`a++`).
-- After `//` always: `// comment`.
-- Around `:` when separating type from supertype, delegating to a constructor, or after `object`. Otherwise no space before `:`. Always space after `:`.
+- 이진 연산자 주변 (`a + b`). 예외: `..` 주변에는 공백 없음 (`0..i`).
+- `if` / `when` / `for` / `while` 키워드 뒤, `(` 앞.
+- 생성자 / 메서드 선언 또는 호출의 `(` 앞에는 없음.
+- `(` 또는 `[` 뒤, `]` 또는 `)` 앞에는 없음.
+- `.`, `?.`, `::`, 타입 꺾쇠, nullable `?` 주변에는 없음.
+- 단항 연산자 주변 없음 (`a++`).
+- `//` 뒤에는 항상 공백: `// 주석`.
+- `:` 주변: 슈퍼타입 구분, 생성자 위임, `object` 뒤에는 공백. 그 외에는 `:` 앞 공백 없음. `:` 뒤는 항상 공백.
 
-**Avoid horizontal alignment.** Renaming a variable shouldn't reflow neighboring lines.
+**수평 정렬 금지.** 변수명 변경이 인접 줄에 영향을 주면 안 된다.
 
-**Modifier order** (when multiple, in this exact order):
+**수정자 순서** (여러 개일 때 이 순서를 정확히 따른다):
 
 ```
 public / protected / private / internal
@@ -96,122 +96,122 @@ operator
 data
 ```
 
-Annotations precede all modifiers, on their own line (annotations without args may share a line; a single bare annotation may share with the declaration). Omit redundant modifiers (`public`) — unless writing a library.
+애노테이션은 모든 수정자 앞, 각자 한 줄 (인수 없는 애노테이션은 한 줄 공유 가능; 단일 애노테이션은 선언과 같은 줄 가능). 불필요한 수정자(`public`)는 생략 — 라이브러리 코드는 예외.
 
-**File annotations** sit after the file comment, before `package`, separated from `package` by a blank line.
+**파일 애노테이션**은 파일 주석 뒤, `package` 앞에, `package`와 빈 줄로 구분.
 
-**Class headers:**
+**클래스 헤더:**
 
-- Short → one line: `class Person(id: Int, name: String)`.
-- Long → each param on its own line, `)` on its own line; supertype call on the same line as `)`. Multiple supertypes: superclass first, each interface on its own line.
+- 짧으면 한 줄: `class Person(id: Int, name: String)`.
+- 길면 파라미터 각자 한 줄, `)` 별도 줄; 슈퍼타입 호출은 `)` 와 같은 줄. 다중 슈퍼타입: 슈퍼클래스 먼저, 각 인터페이스 별도 줄.
 
-**Functions:**
+**함수:**
 
-- Multiline signature → params indented 4 spaces, `)` on its own line, trailing comma encouraged.
-- Single-expression body → use `=`, drop braces and explicit `return`.
-- Long expression body → `=` on signature line; expression on next line, indented 4.
+- 멀티라인 시그니처 → 파라미터 4 스페이스 들여쓰기, `)` 별도 줄, 후행 쉼표 권장.
+- 단일 표현식 바디 → `=` 사용, 중괄호·명시적 `return` 제거.
+- 긴 표현식 바디 → 시그니처 줄에 `=`; 표현식은 다음 줄, 4 들여쓰기.
 
-**Properties:**
+**프로퍼티:**
 
-- Simple read-only one-liner: `val isEmpty: Boolean get() = size == 0`.
-- Complex: `get` / `set` on separate lines.
-- Long initializer: line break after `=`, indent 4.
+- 단순 읽기 전용 한 줄: `val isEmpty: Boolean get() = size == 0`.
+- 복잡한 경우: `get` / `set` 별도 줄.
+- 긴 초기화식: `=` 뒤 줄 바꿈, 4 들여쓰기.
 
-**Control flow:**
+**제어 흐름:**
 
-- Multiline `if` / `when` condition → braces around body; indent continuation 4; `)` and `{` on the same line.
-- `else` / `catch` / `finally` / `while` (of `do-while`): on the same line as the preceding `}`.
-- `when`: short branches without braces; multi-line branches separated by a blank line.
+- 멀티라인 `if` / `when` 조건 → 본문에 중괄호; 이어지는 조건 4 들여쓰기; `)` 와 `{` 같은 줄.
+- `else` / `catch` / `finally` / `do-while`의 `while`: 앞 `}` 와 같은 줄.
+- `when`: 짧은 분기는 중괄호 없이; 멀티라인 분기는 빈 줄로 구분.
 
-**Lambdas:**
+**람다:**
 
-- Spaces around `{`, `}`, and `->`.
-- Trailing lambda outside parens when possible (`list.filter { it > 10 }`).
-- Use `it` for short, non-nested lambdas; name parameters explicitly when nested.
-- No space between label and `{`: `lit@{`.
+- `{`, `}`, `->` 주변 공백.
+- 후행 람다는 가능하면 괄호 밖으로 (`list.filter { it > 10 }`).
+- 짧고 중첩 없는 람다에는 `it` 사용; 중첩 시에는 파라미터 명명.
+- 레이블과 `{` 사이 공백 없음: `lit@{`.
 
-**Chained calls:** `.` or `?.` on the next line, single indent.
+**체이닝:** `.` 또는 `?.` 은 다음 줄, 단일 들여쓰기.
 
-**Trailing commas:** encouraged at declaration site (params, args, enums, `when` entries, destructuring, type params, lambda params, indexing suffix); optional at call site.
+**후행 쉼표:** 선언부(파라미터, 인수, 열거, `when` 항목, 구조 분해, 타입 파라미터, 람다 파라미터, 인덱싱 접미사)에서 권장; 호출부에서는 선택.
 
-## 4. Idiomatic Kotlin
+## 4. 관용적 Kotlin
 
-**`val` over `var`** if not reassigned. Always.
+**재할당하지 않는다면 `val` 우선.** 항상.
 
-**Immutable collection types** (`List`, `Set`, `Map`) for non-mutated values. Use `listOf` not `arrayListOf` unless mutation is intended.
+**변경하지 않는 값에는 불변 컬렉션 타입** (`List`, `Set`, `Map`). 변경이 필요한 경우에만 `arrayListOf`.
 
-**Default parameter values** over overloads.
+**오버로드 대신 기본 파라미터값** 사용.
 
-**Expression form** of `try` / `if` / `when` when producing a value.
+**값을 생성하는 경우 `try` / `if` / `when` 표현식 형태** 사용.
 
-**`if` for binary** conditions; **`when` for 3+** branches.
+**이진 조건에는 `if`; 3개 이상 분기에는 `when`.**
 
-**Nullable `Boolean` in a condition:** check `if (value == true)` or `if (value == false)`.
+**조건문에서 nullable `Boolean`:** `if (value == true)` 또는 `if (value == false)` 로 확인.
 
-**Guard conditions in `when`:** wrap combined boolean expressions in parentheses.
+**`when` 내 가드 조건:** 복합 불리언 표현식은 괄호로 감싼다.
 
-**Open-ended ranges:** `..<` not `..n-1`.
+**반개방 범위:** `..n-1` 대신 `..<` 사용.
 
-**String templates** over concatenation. Use `${...}` only for non-trivial expressions; just `$name` for simple identifiers.
+**문자열 템플릿** 사용, 연결 연산자 지양. 단순 식별자는 `$name`; 비단순 표현식만 `${...}`.
 
-**Multiline strings** over embedded `\n`. Use `trimIndent` (no internal indentation needed) or `trimMargin` (internal indentation needed).
+**여러 줄 문자열**은 내장 `\n` 대신 사용. 내부 들여쓰기 불필요하면 `trimIndent`, 필요하면 `trimMargin`.
 
-**Higher-order functions** (`filter`, `map`) over loops — but prefer regular `for` over `forEach` (unless receiver nullable or part of a chain). Weigh performance for complex chains.
+**고차 함수** (`filter`, `map`) 우선, 루프 지양 — 단, receiver가 nullable이거나 체이닝 일부가 아니면 `forEach` 대신 일반 `for`. 복잡한 체인의 성능은 별도 고려.
 
-**Extension functions** liberally. Restrict visibility (private, internal, local, member) as appropriate.
+**확장 함수** 적극 활용. 가시성(private, internal, local, member)을 적절히 제한.
 
-**Property vs function** — prefer a property when the algorithm doesn't throw, is cheap (or cached), and returns the same result for unchanged object state. Otherwise function.
+**프로퍼티 vs 함수** — 알고리즘이 예외를 던지지 않고, 비용이 낮으며(또는 캐싱됨), 객체 상태 변경 없이 동일한 결과를 반환하면 프로퍼티. 그 외에는 함수.
 
-**Type aliases** for repeated functional types or generic types.
+**타입 별칭**은 반복되는 함수형 타입 또는 제네릭 타입에 사용.
 
-**Factory functions:** give a distinct name from the class unless semantics are truly identical to a constructor; prefer factories over overloaded constructors that can't be merged with default parameters.
+**팩토리 함수:** 클래스와 의미가 완전히 동일하지 않으면 별개의 이름 사용; 기본 파라미터로 합칠 수 없는 오버로드 생성자보다 팩토리 함수 선호.
 
-**Infix functions:** only for symmetric two-object operations (`and`, `to`, `zip`). Never if it mutates the receiver.
+**중위 함수:** 대칭적 두 객체 연산에만 (`and`, `to`, `zip`). receiver를 변경하면 절대 사용 금지.
 
-**Named arguments** when calling functions with multiple same-typed primitives or any `Boolean`, unless context makes meaning obvious.
+**네임드 인수:** 동일 타입 원시값이 여러 개이거나 `Boolean`을 포함하는 함수 호출 시, 의미가 문맥상 명확하지 않으면 사용.
 
-**Platform types:** explicit Kotlin type required for public functions/methods returning a platform type, and for any package- or class-level property initialized from a platform expression. Locals may infer.
+**플랫폼 타입:** 플랫폼 타입을 반환하는 public 함수/메서드, 플랫폼 표현식으로 초기화된 패키지/클래스 수준 프로퍼티에는 Kotlin 타입을 명시한다. 로컬 변수는 추론 가능.
 
-**Avoid multiple labeled returns** in a lambda. Restructure to a single exit point, or convert to an anonymous function. Do not label-return the last statement.
+**람다에서 레이블 return 다중 사용 금지.** 단일 종료 지점으로 재구조화하거나, 익명 함수로 변환. 마지막 문에는 레이블 return 금지.
 
-**Scope functions** (`let` / `run` / `with` / `apply` / `also`): see kotlinlang.org/docs/scope-functions.html.
+**스코프 함수** (`let` / `run` / `with` / `apply` / `also`): kotlinlang.org/docs/scope-functions.html 참조.
 
-## 5. Avoid Redundant Constructs
+## 5. 중복 구문 제거
 
-If the IDE marks it redundant, remove it. Do not keep syntax "for clarity".
+IDE가 중복으로 표시하면 제거한다. "명확성을 위해" 유지하지 않는다.
 
-- Omit `: Unit` return type.
-- Omit semicolons.
-- Omit braces in `${name}` for simple variables — `"$name has ${children.size} children"`.
-- Omit `public` and other redundant modifiers (outside library code).
+- `: Unit` 반환 타입 생략.
+- 세미콜론 생략.
+- 단순 변수 `${}` 중괄호 제거 — `"$name has ${children.size} children"`.
+- `public` 및 기타 불필요한 수정자 생략 (라이브러리 코드 제외).
 
-## 6. Documentation Comments
+## 6. 문서 주석
 
 KDoc:
 
-- Long → `/**` on its own line, each subsequent line begins with `*`.
-- Short → single-line `/** ... */`.
-- Avoid `@param` / `@return` — fold descriptions into prose and link parameters as `[paramName]`. Use the tags only when length forces it.
+- 긴 경우 → `/**` 별도 줄, 이후 각 줄은 `*` 시작.
+- 짧은 경우 → 한 줄 `/** ... */`.
+- `@param` / `@return` 지양 — 설명에 녹이고 파라미터는 `[paramName]` 링크 사용. 길이상 불가피할 때만 태그 사용.
 
-## 7. Library Code — Extra Rules
+## 7. 라이브러리 코드 — 추가 규칙
 
-When writing a library (not application code):
+라이브러리(애플리케이션 코드가 아닌) 작성 시:
 
-- Always specify member visibility explicitly.
-- Always specify function return types and property types explicitly.
-- KDoc on every public member (trivial overrides excepted).
+- 멤버 가시성 항상 명시.
+- 함수 반환 타입과 프로퍼티 타입 항상 명시.
+- 모든 public 멤버에 KDoc (단순 override 제외).
 
 ---
 
-## Code Review Checklist
+## 코드 리뷰 체크리스트
 
-Walk through in this order when reviewing Kotlin code:
+Kotlin 코드 리뷰 시 이 순서로 확인한다:
 
-1. **Naming** — packages lowercase, classes UpperCamel, functions lowerCamel, constants SCREAMING_SNAKE? Acronym rule (2-letter vs 3+) correct? `sort`/`sorted` mutation-vs-copy pattern respected? No `Manager` / `Util`?
-2. **File** — name matches contents? Multiplatform suffix correct?
-3. **Class layout** — properties → secondary constructors → methods → companion? Related methods grouped, not alphabetized?
-4. **Formatting** — 4-space indent, brace placement, whitespace rules, modifier order?
-5. **Idiomatic** — `val` where possible? Immutable collection types? Expression bodies for single-expression functions? `if` for binary, `when` for 3+? `..<` for exclusive ends? String templates? Higher-order functions over loops (forEach exception)?
-6. **Redundancy** — `: Unit` removed? Semicolons removed? Redundant `${}` simplified? Redundant `public` removed?
-7. **KDoc** — public API documented? `@param` / `@return` avoided in favor of inline `[paramName]` links?
-8. **Library code** (if applicable) — explicit visibility, explicit return / property types, KDoc on every public member?
+1. **네이밍** — 패키지 소문자, 클래스 UpperCamel, 함수 lowerCamel, 상수 SCREAMING_SNAKE? 약어 규칙(2글자 vs 3글자 이상) 올바름? `sort`/`sorted` 변경-vs-복사 패턴 준수? `Manager` / `Util` 없음?
+2. **파일** — 파일명이 내용과 일치? 멀티플랫폼 접미사 올바름?
+3. **클래스 레이아웃** — 프로퍼티 → 보조 생성자 → 메서드 → 컴패니언? 관련 메서드 묶음, 알파벳 정렬 아님?
+4. **포맷팅** — 4 스페이스 들여쓰기, 중괄호 위치, 공백 규칙, 수정자 순서?
+5. **관용 표현** — 가능한 곳에 `val`? 불변 컬렉션 타입? 단일 표현식 함수에 표현식 바디? 이진 조건 `if`, 3개 이상 `when`? 개방 끝에 `..<`? 문자열 템플릿? 루프보다 고차 함수 (`forEach` 예외 포함)?
+6. **중복** — `: Unit` 제거? 세미콜론 제거? 불필요한 `${}` 단순화? 불필요한 `public` 제거?
+7. **KDoc** — public API 문서화? `@param` / `@return` 대신 인라인 `[paramName]` 링크 사용?
+8. **라이브러리 코드** (해당 시) — 명시적 가시성, 명시적 반환/프로퍼티 타입, 모든 public 멤버 KDoc?
