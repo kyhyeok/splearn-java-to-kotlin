@@ -35,8 +35,10 @@
 kimspring.splearn
 ├── domain          # 핵심 비즈니스 규칙 (순수 도메인 객체)
 ├── application     # 유스케이스 조율
-│   ├── provided    # 어댑터가 호출하는 인터페이스 (Inbound Port)
-│   └── required    # 애플리케이션이 외부에 요청하는 인터페이스 (Outbound Port)
+│   └── {ctx}/
+│       ├── usecase/    # Use Case 인터페이스 (MemberRegister, MemberLifecycle 등)
+│       ├── port/       # Required 포트 인터페이스 (MemberRepository, EmailSender 등)
+│       └── command/    # 커맨드 객체 (RegisterMemberCommand 등)
 └── adapter         # 외부 시스템 연동
     ├── webapi      # REST API 컨트롤러
     ├── persistence # Spring Data JDBC 리포지토리
