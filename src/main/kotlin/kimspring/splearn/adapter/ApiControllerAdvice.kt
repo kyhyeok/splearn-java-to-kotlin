@@ -38,7 +38,14 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
         request: WebRequest,
     ): ResponseEntity<Any> {
         log.warn { "유효성 검사 실패: ${ex.message}" }
-        return ResponseEntity(ErrorResponse.of(ErrorCode.INVALID_INPUT), HttpStatus.BAD_REQUEST)
+        val fields =
+            ex.bindingResult.fieldErrors.map { fieldError ->
+                ErrorResponse.FieldError(
+                    field = fieldError.field,
+                    message = fieldError.defaultMessage ?: "유효하지 않은 값입니다.",
+                )
+            }
+        return ResponseEntity(ErrorResponse.of(ErrorCode.INVALID_INPUT, fields), HttpStatus.BAD_REQUEST)
     }
 
     override fun handleHttpRequestMethodNotSupported(
@@ -60,7 +67,14 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
     @ExceptionHandler(ConstraintViolationException::class)
     fun handleConstraintViolation(e: ConstraintViolationException): ResponseEntity<ErrorResponse> {
         log.warn { "제약 조건 위반: ${e.message}" }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.of(ErrorCode.INVALID_INPUT))
+        val fields =
+            e.constraintViolations.map { violation ->
+                ErrorResponse.FieldError(
+                    field = violation.propertyPath.toString().substringAfterLast("."),
+                    message = violation.message,
+                )
+            }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.of(ErrorCode.INVALID_INPUT, fields))
     }
 
     @ExceptionHandler(Exception::class)
