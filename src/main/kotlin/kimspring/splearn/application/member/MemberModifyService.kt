@@ -5,7 +5,6 @@ import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
 import kimspring.splearn.application.member.port.EmailSender
 import kimspring.splearn.application.member.port.MemberRepository
-import kimspring.splearn.application.member.usecase.MemberFinder
 import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.member.DuplicateEmailException
@@ -25,7 +24,6 @@ private val log = KotlinLogging.logger {}
 @Transactional
 @Validated
 class MemberModifyService(
-    private val memberFinder: MemberFinder,
     private val memberRepository: MemberRepository,
     private val emailSender: EmailSender,
     private val passwordEncoder: PasswordEncoder,
@@ -49,12 +47,12 @@ class MemberModifyService(
     }
 
     override fun activate(memberId: Long): Member {
-        val member = memberFinder.find(memberId)
+        val member = memberRepository.getById(memberId)
         return memberRepository.save(member.activate(clock.now()))
     }
 
     override fun deactivate(memberId: Long): Member {
-        val member = memberFinder.find(memberId)
+        val member = memberRepository.getById(memberId)
         return memberRepository.save(member.deactivate(clock.now()))
     }
 
@@ -62,7 +60,7 @@ class MemberModifyService(
         memberId: Long,
         command: UpdateMemberInfoCommand,
     ): Member {
-        val member = memberFinder.find(memberId)
+        val member = memberRepository.getById(memberId)
         checkDuplicateProfile(member, command.profileAddress)
         return memberRepository.save(member.updateInfo(command.nickname, command.profileAddress, command.introduction))
     }

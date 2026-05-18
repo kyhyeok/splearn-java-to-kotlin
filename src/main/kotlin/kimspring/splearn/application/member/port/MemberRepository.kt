@@ -9,6 +9,8 @@ interface MemberRepository {
 
     fun findById(id: Long): Member?
 
+    fun getById(id: Long): Member
+
     fun findByEmail(email: Email): Member?
 
     fun findByProfile(profile: Profile): Member?
