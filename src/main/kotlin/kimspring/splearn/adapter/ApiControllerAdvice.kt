@@ -9,6 +9,8 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -37,6 +39,22 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any> {
         log.warn { "유효성 검사 실패: ${ex.message}" }
         return ResponseEntity(ErrorResponse.of(ErrorCode.INVALID_INPUT), HttpStatus.BAD_REQUEST)
+    }
+
+    override fun handleHttpRequestMethodNotSupported(
+        ex: HttpRequestMethodNotSupportedException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest,
+    ): ResponseEntity<Any> {
+        log.warn { "지원하지 않는 HTTP 메서드: ${ex.method}" }
+        return ResponseEntity(ErrorResponse.of(ErrorCode.METHOD_NOT_ALLOWED), HttpStatus.METHOD_NOT_ALLOWED)
+    }
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDenied(e: AccessDeniedException): ResponseEntity<ErrorResponse> {
+        log.warn { "접근 거부: ${e.message}" }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.of(ErrorCode.FORBIDDEN))
     }
 
     @ExceptionHandler(ConstraintViolationException::class)

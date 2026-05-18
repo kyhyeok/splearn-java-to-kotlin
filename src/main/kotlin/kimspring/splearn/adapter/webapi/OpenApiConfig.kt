@@ -23,6 +23,8 @@ class OpenApiConfig {
         OperationCustomizer { operation, _ ->
             operation.responses
                 .addApiResponse("400", ApiResponse().description("입력값 오류"))
+                .addApiResponse("403", ApiResponse().description("접근 권한 없음"))
+                .addApiResponse("405", ApiResponse().description("지원하지 않는 HTTP 메서드"))
                 .addApiResponse("500", ApiResponse().description("서버 오류"))
             operation
         }

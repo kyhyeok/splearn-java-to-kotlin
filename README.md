@@ -81,12 +81,23 @@ PENDING(등록 대기) → ACTIVE(등록 완료) → DEACTIVATED(탈퇴)
 
 ## API
 
-| Method | URI | 설명 |
-|---|---|---|
-| POST | `/api/members` | 회원 등록 |
-| PATCH | `/api/members/{id}/activate` | 등록 완료 |
-| PATCH | `/api/members/{id}/deactivate` | 탈퇴 |
-| PATCH | `/api/members/{id}` | 회원 정보 수정 |
+| Method | URI | 설명 | 성공 응답 |
+|---|---|---|---|
+| POST | `/api/members` | 회원 등록 | `201 Created` + `Location` 헤더 |
+| PATCH | `/api/members/{id}/activate` | 등록 완료 | `200 OK` |
+| PATCH | `/api/members/{id}/deactivate` | 탈퇴 | `200 OK` |
+| PATCH | `/api/members/{id}` | 회원 정보 수정 | `200 OK` |
+
+### 공통 오류 응답
+
+| 코드 | 설명 |
+|---|---|
+| `400 Bad Request` | 입력값 오류 |
+| `403 Forbidden` | 접근 권한 없음 |
+| `404 Not Found` | 리소스 없음 |
+| `405 Method Not Allowed` | 지원하지 않는 HTTP 메서드 |
+| `409 Conflict` | 이메일/프로필 중복 |
+| `500 Internal Server Error` | 서버 내부 오류 |
 
 ---
 

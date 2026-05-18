@@ -55,7 +55,7 @@ class MemberApiTest : FunSpec() {
                     .exchange()
 
             assertThat(result)
-                .hasStatusOk()
+                .hasStatus(HttpStatus.CREATED)
                 .bodyJson()
                 .hasPathSatisfying("$.memberId") { assertThat(it).isNotNull() }
                 .hasPathSatisfying("$.email") { assertThat(it).isEqualTo(request.email) }

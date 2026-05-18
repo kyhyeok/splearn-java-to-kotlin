@@ -54,14 +54,16 @@ class MemberApiWebMvcTest : FunSpec() {
             every { memberRegister.register(request) } returns member
 
             val requestJson = objectMapper.writeValueAsString(request)
-
-            assertThat(
+            val result =
                 mvcTester
                     .post()
                     .uri("/api/members")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(requestJson),
-            ).hasStatusOk()
+                    .content(requestJson)
+                    .exchange()
+
+            assertThat(result)
+                .hasStatus(HttpStatus.CREATED)
                 .bodyJson()
                 .extractingPath("$.memberId")
                 .asNumber()

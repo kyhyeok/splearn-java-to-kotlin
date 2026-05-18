@@ -195,13 +195,42 @@ interface PasswordEncoder {
 // ✅ Use Case 인터페이스만 주입 — Repository·SDK 직접 주입 금지
 @RestController
 class MemberApi(private val register: MemberRegister, private val finder: MemberFinder) {
+    // POST(생성): 201 Created + Location 헤더
     @PostMapping("/api/members")
-    fun register(@RequestBody @Valid cmd: RegisterMemberCommand): ResponseEntity<MemberResponse> =
-        ResponseEntity.ok(MemberResponse.from(register.register(cmd)))
+    fun register(@RequestBody @Valid cmd: RegisterMemberCommand): ResponseEntity<MemberResponse> {
+        val saved = register.register(cmd)
+        val location = URI.create("/api/members/${requireNotNull(saved.id)}")
+        return ResponseEntity.created(location).body(MemberResponse.from(saved))
+    }
+
+    // GET/PATCH(조회·수정): 200 OK
+    @GetMapping("/api/members/{id}")
+    fun find(@PathVariable id: Long): MemberResponse = MemberResponse.from(finder.find(id))
 }
 ```
 
 DTO: `companion object { fun from(domain): Dto }` 또는 `fun toDomain(): Domain` 변환 메서드.
+
+### HTTP 상태 코드 기준 (ADR-0010)
+
+| 코드 | 사용 상황 | 구현 위치 |
+|---|---|---|
+| **201 Created** | `POST` — 새 리소스 생성. `Location` 헤더 필수 | 컨트롤러 메서드 |
+| **200 OK** | `GET`/`PATCH`/`DELETE` — 기존 리소스 조회·변경 | 컨트롤러 기본 반환 |
+| **204 No Content** | 성공이지만 응답 본문 없음 | 컨트롤러 메서드 |
+| **304 Not Modified** | 조건부 GET (ETag/If-None-Match). **현재 미구현 — GET 추가 시 적용** | — |
+| **400 Bad Request** | Bean Validation 실패, 잘못된 입력값 | `ApiControllerAdvice` |
+| **403 Forbidden** | 인증은 됐으나 권한 없음 (`AccessDeniedException`) | `ApiControllerAdvice` |
+| **404 Not Found** | 리소스 없음 (`*NotFoundException`) | `ApiControllerAdvice` |
+| **405 Method Not Allowed** | 지원하지 않는 HTTP 메서드 | `ApiControllerAdvice` (오버라이드) |
+| **409 Conflict** | 중복 데이터 충돌 | `ApiControllerAdvice` |
+| **500 Internal Server Error** | 예상치 못한 예외 | `ApiControllerAdvice` |
+| **504 Gateway Timeout** | 외부 서비스 타임아웃. **현재 미구현 — 실제 HTTP 클라이언트 도입 시 적용** | — |
+
+**Swagger 문서화 원칙:**
+- 201은 해당 `@PostMapping`에 `@ApiResponse(responseCode = "201", ...)` 로 명시
+- 400, 403, 405, 500은 `OpenApiConfig.globalResponseCustomizer`에서 전역 추가
+- 409 등 비즈니스 충돌은 해당 엔드포인트의 `@Operation`에 `@ApiResponse`로 명시
 
 ### outbound (`adapter.out.persistence`)
 
