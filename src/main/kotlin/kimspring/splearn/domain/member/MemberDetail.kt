@@ -3,7 +3,6 @@ package kimspring.splearn.domain.member
 import java.time.LocalDateTime
 
 data class MemberDetail(
-    val id: Long? = null,
     val profile: Profile? = null,
     val introduction: String? = null,
     val registeredAt: LocalDateTime,

@@ -17,7 +17,6 @@ data class MemberDetailJdbcEntity(
 ) {
     fun toDomain(): MemberDetail =
         MemberDetail(
-            id = id,
             profile = profileAddress?.let { Profile(it) },
             introduction = introduction,
             registeredAt = registeredAt,
@@ -28,7 +27,6 @@ data class MemberDetailJdbcEntity(
     companion object {
         fun from(detail: MemberDetail): MemberDetailJdbcEntity =
             MemberDetailJdbcEntity(
-                id = detail.id,
                 profileAddress = detail.profile?.address,
                 introduction = detail.introduction,
                 registeredAt = detail.registeredAt,
