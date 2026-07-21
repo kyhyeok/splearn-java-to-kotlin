@@ -8,7 +8,6 @@ import io.kotest.matchers.shouldBe
 import kimspring.splearn.domain.member.InvalidMemberStateException
 import kimspring.splearn.domain.member.MemberFixture.createPasswordEncoder
 import kimspring.splearn.domain.member.MemberFixture.createRegisterMemberCommand
-import kimspring.splearn.domain.shared.Email
 import java.time.LocalDateTime
 
 class MemberTest : FunSpec() {
@@ -20,7 +19,7 @@ class MemberTest : FunSpec() {
         beforeEach {
             passwordEncoder = createPasswordEncoder()
             val command = createRegisterMemberCommand()
-            member = Member.register(Email(command.email), command.nickname, command.password, passwordEncoder, now)
+            member = Member.register(command.toInfo(), passwordEncoder, now)
         }
 
         test("registerMember") {
@@ -81,10 +80,10 @@ class MemberTest : FunSpec() {
 
         test("invalidEmail") {
             shouldThrow<IllegalArgumentException> {
-                Member.register(Email("invaluid email"), "KimHyeok", "verysecret", passwordEncoder, now)
+                Member.register(MemberRegisterInfo("invaluid email", "KimHyeok", "verysecret"), passwordEncoder, now)
             }
 
-            Member.register(Email("kim@gmail.com"), "KimHyeok", "verysecret", passwordEncoder, now)
+            Member.register(MemberRegisterInfo("kim@gmail.com", "KimHyeok", "verysecret"), passwordEncoder, now)
         }
 
         test("updateInfo") {

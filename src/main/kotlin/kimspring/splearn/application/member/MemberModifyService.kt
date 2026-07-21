@@ -34,14 +34,7 @@ class MemberModifyService(
     MemberModifier {
     override fun register(command: RegisterMemberCommand): Member {
         checkDuplicateEmail(command)
-        val member =
-            Member.register(
-                email = Email(command.email),
-                nickname = command.nickname,
-                password = command.password,
-                encoder = passwordEncoder,
-                now = clock.now(),
-            )
+        val member = Member.register(command.toInfo(), passwordEncoder, clock.now())
         val saved = memberRepository.save(member)
         sendWelcomeEmail(saved)
         log.info { "회원 가입 완료: memberId=${saved.id}" }

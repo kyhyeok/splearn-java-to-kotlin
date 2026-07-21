@@ -1,7 +1,6 @@
 package kimspring.splearn.domain.member
 
 import kimspring.splearn.application.member.command.RegisterMemberCommand
-import kimspring.splearn.domain.shared.Email
 import java.time.LocalDateTime
 
 object MemberFixture {
@@ -24,25 +23,13 @@ object MemberFixture {
 
     fun createMember(): Member {
         val command = createRegisterMemberCommand()
-        return Member.register(
-            email = Email(command.email),
-            nickname = command.nickname,
-            password = command.password,
-            encoder = createPasswordEncoder(),
-            now = FIXED_NOW,
-        )
+        return Member.register(command.toInfo(), createPasswordEncoder(), FIXED_NOW)
     }
 
     fun createMember(id: Long): Member = createMember().copy(id = id)
 
     fun createMember(email: String): Member {
         val command = createRegisterMemberCommand(email)
-        return Member.register(
-            email = Email(command.email),
-            nickname = command.nickname,
-            password = command.password,
-            encoder = createPasswordEncoder(),
-            now = FIXED_NOW,
-        )
+        return Member.register(command.toInfo(), createPasswordEncoder(), FIXED_NOW)
     }
 }

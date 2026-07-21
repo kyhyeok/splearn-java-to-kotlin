@@ -44,16 +44,14 @@ data class Member(
 
     companion object {
         fun register(
-            email: Email,
-            nickname: String,
-            password: String,
+            info: MemberRegisterInfo,
             encoder: PasswordEncoder,
             now: LocalDateTime,
         ): Member =
             Member(
-                email = email,
-                nickname = nickname,
-                passwordHash = encoder.encode(password),
+                email = Email(info.email),
+                nickname = info.nickname,
+                passwordHash = encoder.encode(info.password),
                 status = MemberStatus.PENDING,
                 detail = MemberDetail.create(now),
             )
