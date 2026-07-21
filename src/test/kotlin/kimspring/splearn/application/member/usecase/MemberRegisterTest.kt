@@ -100,13 +100,14 @@ class MemberRegisterTest : FunSpec() {
             // 기존 프로필 주소를 바꾸는 것도 가능
             memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "kim001", "자기소개임"))
 
-            // 프로필 주소를 제거하는 것도 가능
-            memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "", "자기소개임"))
-
             // 프로필 주소 중복은 허용하지 않음
             shouldThrow<DuplicateProfileException> {
                 memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "kim002", "자기소개임"))
             }
+
+            // 프로필 주소를 제거하는 것도 가능
+            memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "", "자기소개임"))
+            memberModifier.updateInfo(member2Id, UpdateMemberInfoCommand("Kimmy", "", "자기소개임"))
         }
 
         test("memberRegisterCommandFail") {
