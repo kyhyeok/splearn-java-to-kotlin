@@ -14,4 +14,5 @@ enum class ErrorCode(
     DUPLICATE_EMAIL(409, "M002", "이미 사용중인 이메일입니다."),
     DUPLICATE_PROFILE(409, "M003", "이미 존재하는 프로필 주소입니다."),
     INVALID_MEMBER_STATE(400, "M004", "회원 상태가 올바르지 않습니다."),
+    LOGIN_FAILED(401, "M005", "이메일 또는 비밀번호가 올바르지 않습니다."),
 }
