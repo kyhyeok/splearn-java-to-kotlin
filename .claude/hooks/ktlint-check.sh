@@ -1,11 +1,7 @@
 #!/bin/sh
 cd "$(dirname "$0")/../.."
 
-# Gradle 8.14.3은 JDK 25에서 build.gradle.kts 컴파일에 실패한다. 데몬 JVM만 21로 낮춘다 (컴파일은 jvmToolchain(25) 사용).
-if [ -z "$JAVA_HOME" ] && [ -x /usr/libexec/java_home ]; then
-    JAVA_HOME=$(/usr/libexec/java_home -v 21 2>/dev/null) && export JAVA_HOME
-fi
-
+# 데몬 JVM은 gradle/gradle-daemon-jvm.properties가 JDK 25로 고정한다.
 output=$(./gradlew ktlintCheck --daemon -q 2>&1)
 status=$?
 if [ $status -ne 0 ]; then

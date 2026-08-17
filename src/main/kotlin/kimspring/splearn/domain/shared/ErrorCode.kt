@@ -15,4 +15,7 @@ enum class ErrorCode(
     DUPLICATE_PROFILE(409, "M003", "이미 존재하는 프로필 주소입니다."),
     INVALID_MEMBER_STATE(400, "M004", "회원 상태가 올바르지 않습니다."),
     LOGIN_FAILED(401, "M005", "이메일 또는 비밀번호가 올바르지 않습니다."),
+    INSTRUCTOR_NOT_FOUND(404, "I001", "강사를 찾을 수 없습니다."),
+    DUPLICATE_INSTRUCTOR_APPLICATION(409, "I002", "이미 강사 신청을 한 회원입니다."),
+    INVALID_INSTRUCTOR_STATE(400, "I003", "강사 상태가 올바르지 않습니다."),
 }

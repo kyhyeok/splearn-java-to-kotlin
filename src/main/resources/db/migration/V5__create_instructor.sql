@@ -1,0 +1,8 @@
+CREATE TABLE instructor (
+    id        BIGINT      NOT NULL AUTO_INCREMENT,
+    member_id BIGINT      NOT NULL,
+    status    VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT UK_INSTRUCTOR_MEMBER_ID UNIQUE (member_id),
+    CONSTRAINT FK_INSTRUCTOR_MEMBER_ID FOREIGN KEY (member_id) REFERENCES member (id)
+);

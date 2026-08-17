@@ -32,4 +32,6 @@ object MemberFixture {
         val command = createRegisterMemberCommand(email)
         return Member.register(command.toInfo(), createPasswordEncoder(), FIXED_NOW)
     }
+
+    fun createActiveMember(id: Long = 1L): Member = createMember(id).activate(FIXED_NOW)
 }
