@@ -15,15 +15,11 @@ import kimspring.splearn.domain.member.PasswordEncoder
 import kimspring.splearn.domain.member.Profile
 import kimspring.splearn.domain.shared.Clock
 import kimspring.splearn.domain.shared.Email
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.validation.annotation.Validated
+import kimspring.splearn.support.stereotype.ApplicationService
 
 private val log = KotlinLogging.logger {}
 
-@Service
-@Transactional
-@Validated
+@ApplicationService
 class MemberModifyService(
     private val memberRepository: MemberRepository,
     private val emailSender: EmailSender,

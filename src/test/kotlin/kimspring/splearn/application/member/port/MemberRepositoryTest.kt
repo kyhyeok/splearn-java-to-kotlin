@@ -39,9 +39,11 @@ class MemberRepositoryTest : FunSpec() {
         }
 
         test("duplicateEmailFail") {
-            memberRepository.save(createMember())
+            val member = memberRepository.save(createMember())
 
-            shouldThrow<DataIntegrityViolationException> { memberRepository.save(createMember()) }
+            shouldThrow<DataIntegrityViolationException> {
+                memberRepository.save(createMember(member.email.address))
+            }
         }
     }
 }

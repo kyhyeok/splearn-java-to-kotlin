@@ -3,29 +3,22 @@ package kimspring.splearn.adapter.webapi
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
-import kimspring.splearn.SplearnTestConfiguration
 import kimspring.splearn.adapter.webapi.dto.MemberRegisterResponse
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.port.MemberRepository
 import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.member.MemberFixture
 import kimspring.splearn.domain.member.MemberStatus
+import kimspring.splearn.support.stereotype.WebApiAdapterTest
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
-import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.assertj.MockMvcTester
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import org.springframework.transaction.annotation.Transactional
 import tools.jackson.databind.ObjectMapper
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
-@Import(SplearnTestConfiguration::class)
+@WebApiAdapterTest
 class MemberApiTest : FunSpec() {
     @Autowired
     private lateinit var mvcTester: MockMvcTester
@@ -72,9 +65,9 @@ class MemberApiTest : FunSpec() {
         }
 
         test("duplicateEmail") {
-            memberRegister.register(MemberFixture.createRegisterMemberCommand())
-
             val request: RegisterMemberCommand = MemberFixture.createRegisterMemberCommand()
+            memberRegister.register(request)
+
             val requestJson = objectMapper.writeValueAsString(request)
 
             val result =

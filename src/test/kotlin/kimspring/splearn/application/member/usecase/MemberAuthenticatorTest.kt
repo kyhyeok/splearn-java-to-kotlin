@@ -5,21 +5,16 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import jakarta.validation.ConstraintViolationException
-import kimspring.splearn.SplearnTestConfiguration
 import kimspring.splearn.application.member.command.LoginMemberCommand
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.domain.member.LoginFailedException
 import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.MemberFixture
 import kimspring.splearn.domain.member.MemberStatus
+import kimspring.splearn.support.stereotype.ApplicationServiceTest
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.transaction.annotation.Transactional
 
-@SpringBootTest
-@Transactional
-@Import(SplearnTestConfiguration::class)
+@ApplicationServiceTest
 class MemberAuthenticatorTest : FunSpec() {
     @Autowired
     private lateinit var memberAuthenticator: MemberAuthenticator

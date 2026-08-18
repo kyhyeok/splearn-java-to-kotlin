@@ -5,13 +5,9 @@ import kimspring.splearn.application.instructor.usecase.InstructorApplication
 import kimspring.splearn.application.member.usecase.MemberFinder
 import kimspring.splearn.domain.instructor.DuplicateInstructorApplicationException
 import kimspring.splearn.domain.instructor.Instructor
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.validation.annotation.Validated
+import kimspring.splearn.support.stereotype.ApplicationService
 
-@Service
-@Transactional
-@Validated
+@ApplicationService
 class InstructorModifyService(
     private val instructorRepository: InstructorRepository,
     private val memberFinder: MemberFinder,

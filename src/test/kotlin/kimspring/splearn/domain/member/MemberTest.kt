@@ -13,13 +13,14 @@ import java.time.LocalDateTime
 class MemberTest : FunSpec() {
     private lateinit var member: Member
     private lateinit var passwordEncoder: PasswordEncoder
+    private lateinit var registerInfo: MemberRegisterInfo
     private val now = LocalDateTime.of(2024, 1, 1, 0, 0)
 
     init {
         beforeEach {
             passwordEncoder = createPasswordEncoder()
-            val command = createRegisterMemberCommand()
-            member = Member.register(command.toInfo(), passwordEncoder, now)
+            registerInfo = createRegisterMemberCommand().toInfo()
+            member = Member.register(registerInfo, passwordEncoder, now)
         }
 
         test("registerMember") {
@@ -61,7 +62,7 @@ class MemberTest : FunSpec() {
         }
 
         test("verifyPassword") {
-            member.verifyPassword("verysecret", passwordEncoder) shouldBe true
+            member.verifyPassword(registerInfo.password, passwordEncoder) shouldBe true
             member.verifyPassword("hello", passwordEncoder) shouldBe false
         }
 

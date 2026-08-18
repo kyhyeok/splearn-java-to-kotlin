@@ -7,11 +7,11 @@ import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
 import kimspring.splearn.application.member.usecase.MemberLifecycle
 import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.application.member.usecase.MemberRegister
+import kimspring.splearn.support.stereotype.WebApiAdapter
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
-@RestController
+@WebApiAdapter
 class MemberApi(
     private val memberRegister: MemberRegister,
     private val memberLifecycle: MemberLifecycle,

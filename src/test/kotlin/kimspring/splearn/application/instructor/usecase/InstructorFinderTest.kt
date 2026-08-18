@@ -5,20 +5,15 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
-import kimspring.splearn.SplearnTestConfiguration
 import kimspring.splearn.application.member.usecase.MemberLifecycle
 import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.instructor.Instructor
 import kimspring.splearn.domain.instructor.InstructorNotFoundException
 import kimspring.splearn.domain.member.MemberFixture
+import kimspring.splearn.support.stereotype.ApplicationServiceTest
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.transaction.annotation.Transactional
 
-@SpringBootTest
-@Transactional
-@Import(SplearnTestConfiguration::class)
+@ApplicationServiceTest
 class InstructorFinderTest : FunSpec() {
     @Autowired
     private lateinit var instructorFinder: InstructorFinder

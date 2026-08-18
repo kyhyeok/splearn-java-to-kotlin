@@ -13,7 +13,7 @@ description: splearn 프로젝트 전용 헥사고날 아키텍처 규칙. domai
 
 ## §1 레이어 의존 방향
 
-`HexagonalArchitectureTest` (Konsist)가 CI에서 검증한다:
+`HexagonalArchitectureTest`(Konsist 계층 + ArchUnit 슬라이스)가 CI에서 검증한다:
 
 ```
 adapter   (kimspring.splearn.adapter..)
@@ -25,6 +25,14 @@ domain    (kimspring.splearn.domain..)
 ```
 
 역방향 절대 금지. adapter → adapter 직접 호출 금지 — 반드시 application 포트 경유.
+
+슬라이스 규칙 (ArchUnit):
+
+- `domain.(*)`, `application.(*)` 슬라이스 간 순환 의존 금지
+- 애그리거트는 다른 슬라이스의 조회 메서드(`get`/`is`/`ensure` 접두사)와
+  data class 구조적 메서드(`copy`/`componentN`/`equals`/`hashCode`/`toString`)·enum 메서드만 호출할 수 있다
+  (data class라도 `activate` 같은 상태 전이 메서드는 차단 — 클래스 단위 면제 아님)
+- 어댑터는 도메인 객체에 대해 같은 조회 전용 규칙을 따른다. 도메인 변경은 유스케이스 포트를 통해서만
 
 ---
 
@@ -43,9 +51,11 @@ kimspring.splearn
 │       ├── usecase/         ← Use Case 인터페이스 (provided 포트)
 │       ├── port/            ← required 포트 인터페이스
 │       └── command/         ← Command 객체
-└── domain
-    ├── {ctx}/               ← 엔티티, VO, 도메인 예외, 도메인 포트
-    └── shared/              ← SplearnException, ErrorCode 등 공유 타입
+├── domain
+│   ├── {ctx}/               ← 엔티티, VO, 도메인 예외, 도메인 포트
+│   └── shared/              ← SplearnException, ErrorCode 등 공유 타입
+└── support
+    └── stereotype/          ← 스테레오타입 애노테이션 (@ApplicationService 등)
 ```
 
 ---

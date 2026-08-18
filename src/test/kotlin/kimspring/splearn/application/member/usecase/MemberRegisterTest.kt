@@ -6,7 +6,6 @@ import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import jakarta.validation.ConstraintViolationException
-import kimspring.splearn.SplearnTestConfiguration
 import kimspring.splearn.application.member.command.RegisterMemberCommand
 import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
 import kimspring.splearn.application.member.usecase.MemberLifecycle
@@ -16,14 +15,10 @@ import kimspring.splearn.domain.member.DuplicateProfileException
 import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.MemberFixture
 import kimspring.splearn.domain.member.MemberStatus
+import kimspring.splearn.support.stereotype.ApplicationServiceTest
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.transaction.annotation.Transactional
 
-@SpringBootTest
-@Transactional
-@Import(SplearnTestConfiguration::class)
+@ApplicationServiceTest
 class MemberRegisterTest : FunSpec() {
     @Autowired
     private lateinit var memberRegister: MemberRegister
@@ -45,10 +40,11 @@ class MemberRegisterTest : FunSpec() {
         }
 
         test("duplicateEmailFail") {
-            memberRegister.register(MemberFixture.createRegisterMemberCommand())
+            val command = MemberFixture.createRegisterMemberCommand()
+            memberRegister.register(command)
 
             shouldThrow<DuplicateEmailException> {
-                memberRegister.register(MemberFixture.createRegisterMemberCommand())
+                memberRegister.register(command)
             }
         }
 

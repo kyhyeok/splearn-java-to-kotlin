@@ -3,13 +3,9 @@ package kimspring.splearn.application.instructor
 import kimspring.splearn.application.instructor.port.InstructorRepository
 import kimspring.splearn.application.instructor.usecase.InstructorFinder
 import kimspring.splearn.domain.instructor.Instructor
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.validation.annotation.Validated
+import kimspring.splearn.support.stereotype.QueryApplicationService
 
-@Service
-@Transactional(readOnly = true)
-@Validated
+@QueryApplicationService
 class InstructorQueryService(
     private val instructorRepository: InstructorRepository,
 ) : InstructorFinder {

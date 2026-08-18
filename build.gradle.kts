@@ -51,6 +51,8 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions-spring:6.1.11")
     testImplementation("io.mockk:mockk:1.14.9")
     testImplementation("com.lemonappdev:konsist:0.17.3")
+    testImplementation("com.tngtech.archunit:archunit:1.4.1")
+    testImplementation("org.instancio:instancio-core:6.0.0-RC2")
 }
 
 tasks.withType<Test> {

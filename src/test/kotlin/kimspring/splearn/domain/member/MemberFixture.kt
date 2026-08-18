@@ -1,13 +1,25 @@
 package kimspring.splearn.domain.member
 
 import kimspring.splearn.application.member.command.RegisterMemberCommand
+import org.instancio.Instancio
+import org.instancio.Select.field
 import java.time.LocalDateTime
 
 object MemberFixture {
     fun createRegisterMemberCommand(email: String): RegisterMemberCommand =
-        RegisterMemberCommand(email, "KimHyeok", "verysecret")
+        Instancio
+            .of(RegisterMemberCommand::class.java)
+            .set(field(RegisterMemberCommand::class.java, RegisterMemberCommand::email.name), email)
+            .create()
 
-    fun createRegisterMemberCommand(): RegisterMemberCommand = createRegisterMemberCommand("kim@gmail.com")
+    fun createRegisterMemberCommand(): RegisterMemberCommand = createRegisterMemberCommand(randomEmail())
+
+    private fun randomEmail(): String =
+        Instancio
+            .gen()
+            .net()
+            .email()
+            .get()
 
     fun createPasswordEncoder(): PasswordEncoder =
         object : PasswordEncoder {

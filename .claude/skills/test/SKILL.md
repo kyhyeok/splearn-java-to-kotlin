@@ -17,7 +17,8 @@ description: splearn 프로젝트 테스트 작성 규칙. 테스트 코드를 �
 | 테스트 프레임워크 | Kotest `FunSpec` | 6.1.11 |
 | Spring 연동 | `kotest-extensions-spring` (`SpringExtension`) | 6.1.11 |
 | 모킹 | MockK | 1.14.9 |
-| 아키텍처 검증 | Konsist | 0.17.3 |
+| 아키텍처 검증 | Konsist(계층) + ArchUnit(슬라이스) | 0.17.3 / 1.4.1 |
+| 픽스처 랜덤화 | Instancio (`bean.validation.enabled=true`) | 6.0.0-RC2 |
 | 포맷 | ktlint | 14.0.1 |
 | 정적 분석 | detekt (`ignoreFailures = true`) | 2.0.0-alpha.3 |
 | 테스트 DB | H2 (MySQL 호환 모드) | — |
@@ -106,9 +107,7 @@ class MemberRepositoryTest : FunSpec() {
 ### 3-3. Use Case 통합 — 전체 Spring 컨텍스트, 실제 DB
 
 ```kotlin
-@SpringBootTest
-@Transactional
-@Import(SplearnTestConfiguration::class)
+@ApplicationServiceTest // = @SpringBootTest + @Transactional + @Import(SplearnTestConfiguration::class)
 class MemberRegisterTest : FunSpec() {
     @Autowired private lateinit var memberRegister: MemberRegister
 
@@ -155,10 +154,7 @@ class MemberApiWebMvcTest : FunSpec() {
 ### 3-5. API 통합 — 전체 Spring 컨텍스트 + MockMvcTester
 
 ```kotlin
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
-@Import(SplearnTestConfiguration::class)
+@WebApiAdapterTest // = @SpringBootTest + @AutoConfigureMockMvc + @Transactional + @Import(...)
 class MemberApiTest : FunSpec() {
     @Autowired private lateinit var mvcTester: MockMvcTester
 
@@ -244,10 +240,11 @@ object MemberFixture {
 - `object`로 선언 — state 없음, factory method만.
 - 새 도메인 컨텍스트가 생기면 `{Context}Fixture.kt`를 같은 위치에 추가한다.
 - Fixture의 기본값은 실제 유효한 값으로 — 검증 우회용 magic value 금지.
+- 커맨드 픽스처 값은 Instancio 로 랜덤 생성한다. 같은 값이 두 번 필요하면 픽스처를 재호출하지 말고 반환 객체를 재사용한다.
 
 ---
 
-## §7 아키텍처 테스트 — Konsist
+## §7 아키텍처 테스트 — Konsist + ArchUnit
 
 `src/test/kotlin/kimspring/splearn/HexagonalArchitectureTest.kt`
 
@@ -268,7 +265,13 @@ class HexagonalArchitectureTest : FunSpec({
 ```
 
 - Spring 컨텍스트 없음, `@Transactional` 없음.
-- 이 파일은 직접 수정하지 않는다 — 레이어 구조가 변하면 Layer 선언만 갱신.
+- 같은 파일의 ArchUnit 테스트가 슬라이스 규칙을 검증한다: `domain.(*)`/`application.(*)` 순환 금지,
+  애그리거트는 다른 슬라이스의 조회 메서드(`get`/`is`/`ensure`)·data class 구조적 메서드
+  (`copy`/`componentN`/`equals`/`hashCode`/`toString`)·enum 메서드만 호출 가능(상태 전이 메서드 차단),
+  어댑터는 도메인 객체에 대해 같은 조회 전용 규칙을 따른다.
+- 커스텀 ArchCondition은 `support/archunit/ArchUnitConditions.kt`에 있다. 규칙이 위반을 실제로
+  잡아내는지는 `learningtest/archunit/ArchUnitSliceLearningTest`가 위반 픽스처로 상시 검증한다.
+- 이 파일은 직접 수정하지 않는다 — 레이어/슬라이스 구조가 변하면 Layer 선언과 슬라이스 패턴만 갱신.
 
 ---
 

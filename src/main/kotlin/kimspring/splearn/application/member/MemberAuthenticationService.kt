@@ -7,13 +7,9 @@ import kimspring.splearn.domain.member.LoginFailedException
 import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.PasswordEncoder
 import kimspring.splearn.domain.shared.Email
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.validation.annotation.Validated
+import kimspring.splearn.support.stereotype.QueryApplicationService
 
-@Service
-@Transactional(readOnly = true)
-@Validated
+@QueryApplicationService
 class MemberAuthenticationService(
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder,
