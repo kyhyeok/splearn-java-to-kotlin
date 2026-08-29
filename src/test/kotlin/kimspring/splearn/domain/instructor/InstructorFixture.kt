@@ -8,5 +8,7 @@ object InstructorFixture {
 
     fun createInstructor(): Instructor = createInstructor(MemberFixture.createActiveMember())
 
-    fun createActiveInstructor(): Instructor = createInstructor().approve()
+    fun createActiveInstructor(member: Member): Instructor = createInstructor(member).approve()
+
+    fun createActiveInstructor(id: Long = 1L): Instructor = createInstructor().approve().copy(id = id)
 }

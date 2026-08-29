@@ -18,4 +18,7 @@ enum class ErrorCode(
     INSTRUCTOR_NOT_FOUND(404, "I001", "강사를 찾을 수 없습니다."),
     DUPLICATE_INSTRUCTOR_APPLICATION(409, "I002", "이미 강사 신청을 한 회원입니다."),
     INVALID_INSTRUCTOR_STATE(400, "I003", "강사 상태가 올바르지 않습니다."),
+    COURSE_NOT_FOUND(404, "CO001", "강의를 찾을 수 없습니다."),
+    INVALID_COURSE_STATE(400, "CO002", "강의 상태가 올바르지 않습니다."),
+    COURSE_VALIDATION_FAILED(400, "CO003", "강의 정보가 올바르지 않습니다."),
 }

@@ -1,39 +1,21 @@
 package kimspring.splearn.application.instructor.usecase
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.FunSpec
-import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
-import kimspring.splearn.application.member.usecase.MemberLifecycle
-import kimspring.splearn.application.member.usecase.MemberRegister
-import kimspring.splearn.domain.instructor.Instructor
 import kimspring.splearn.domain.instructor.InstructorNotFoundException
-import kimspring.splearn.domain.member.MemberFixture
-import kimspring.splearn.support.stereotype.ApplicationServiceTest
+import kimspring.splearn.support.test.BaseApplicationServiceTest
 import org.springframework.beans.factory.annotation.Autowired
 
-@ApplicationServiceTest
-class InstructorFinderTest : FunSpec() {
+class InstructorFinderTest : BaseApplicationServiceTest() {
     @Autowired
     private lateinit var instructorFinder: InstructorFinder
 
-    @Autowired
-    private lateinit var instructorApplication: InstructorApplication
-
-    @Autowired
-    private lateinit var memberRegister: MemberRegister
-
-    @Autowired
-    private lateinit var memberLifecycle: MemberLifecycle
-
     init {
-        extension(SpringExtension())
-
         test("find") {
-            val instructor = applyInstructor()
+            val instructor = preparePendingInstructor()
 
-            instructorFinder.find(instructor.id!!).id shouldBe instructor.id
+            instructorFinder.find(requireNotNull(instructor.id)).id shouldBe instructor.id
         }
 
         test("findFail") {
@@ -41,17 +23,11 @@ class InstructorFinderTest : FunSpec() {
         }
 
         test("findByMember") {
-            val instructor = applyInstructor()
+            val instructor = preparePendingInstructor()
 
             instructorFinder.findByMember(instructor.memberId)?.id shouldBe instructor.id
 
             instructorFinder.findByMember(Long.MAX_VALUE).shouldBeNull()
         }
-    }
-
-    private fun applyInstructor(): Instructor {
-        val member = memberRegister.register(MemberFixture.createRegisterMemberCommand())
-        memberLifecycle.activate(member.id!!)
-        return instructorApplication.apply(member.id!!)
     }
 }
