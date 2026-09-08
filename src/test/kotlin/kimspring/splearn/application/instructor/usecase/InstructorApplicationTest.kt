@@ -14,7 +14,7 @@ class InstructorApplicationTest : BaseApplicationServiceTest() {
 
     init {
         test("apply") {
-            val member = prepareMember()
+            val member = prepareActiveMember()
 
             val instructor = instructorApplication.apply(requireNotNull(member.id))
 
@@ -23,7 +23,7 @@ class InstructorApplicationTest : BaseApplicationServiceTest() {
         }
 
         test("applyDuplicateFail") {
-            val member = prepareMember()
+            val member = prepareActiveMember()
             instructorApplication.apply(requireNotNull(member.id))
 
             shouldThrow<DuplicateInstructorApplicationException> {

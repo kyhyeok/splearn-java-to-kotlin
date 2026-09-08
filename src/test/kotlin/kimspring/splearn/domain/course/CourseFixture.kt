@@ -33,6 +33,18 @@ object CourseFixture {
             .set(field(UpdateCourseInfoCommand::class.java, UpdateCourseInfoCommand::title.name), title)
             .create()
 
+    fun createPublishedCourse(instructor: Instructor): Course {
+        val course = createCourse(instructor)
+        val command = createUpdateCourseInfoCommand(course.title)
+        return course
+            .updateInfo(command.title, command.description)
+            .submitForReview()
+            .publish(FIXED_NOW)
+    }
+
+    fun createPublishedCourse(id: Long = 1L): Course =
+        createPublishedCourse(InstructorFixture.createActiveInstructor()).copy(id = id)
+
     private fun randomTitle(): String =
         Instancio
             .gen()

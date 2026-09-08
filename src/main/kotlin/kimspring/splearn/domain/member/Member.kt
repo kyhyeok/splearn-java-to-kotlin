@@ -42,6 +42,10 @@ data class Member(
 
     fun isActive(): Boolean = status == MemberStatus.ACTIVE
 
+    fun ensureActive() {
+        if (!isActive()) throw InvalidMemberStateException("ACTIVE 상태가 아닙니다.")
+    }
+
     companion object {
         fun register(
             info: MemberRegisterInfo,

@@ -3,11 +3,15 @@ package kimspring.splearn.support.test
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import kimspring.splearn.application.course.usecase.CourseCreator
+import kimspring.splearn.application.course.usecase.CoursePublisher
+import kimspring.splearn.application.enrollment.command.EnrollCommand
+import kimspring.splearn.application.enrollment.usecase.Enroller
 import kimspring.splearn.application.instructor.usecase.InstructorApplication
 import kimspring.splearn.application.member.usecase.MemberLifecycle
 import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.course.Course
 import kimspring.splearn.domain.course.CourseFixture
+import kimspring.splearn.domain.enrollment.Enrollment
 import kimspring.splearn.domain.instructor.Instructor
 import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.MemberFixture
@@ -35,17 +39,23 @@ abstract class BaseApplicationServiceTest : FunSpec() {
     @Autowired
     protected lateinit var courseCreator: CourseCreator
 
+    @Autowired
+    protected lateinit var coursePublisher: CoursePublisher
+
+    @Autowired
+    protected lateinit var enroller: Enroller
+
     init {
         extension(SpringExtension())
     }
 
-    protected fun prepareMember(): Member {
+    protected fun prepareActiveMember(): Member {
         val registered = memberRegister.register(MemberFixture.createRegisterMemberCommand())
         return memberLifecycle.activate(requireNotNull(registered.id))
     }
 
     protected fun preparePendingInstructor(): Instructor =
-        instructorApplication.apply(requireNotNull(prepareMember().id))
+        instructorApplication.apply(requireNotNull(prepareActiveMember().id))
 
     protected fun prepareInstructor(): Instructor =
         instructorApplication.approve(requireNotNull(preparePendingInstructor().id))
@@ -54,5 +64,17 @@ abstract class BaseApplicationServiceTest : FunSpec() {
         val instructor = prepareInstructor()
         val created = courseCreator.create(CourseFixture.createCreateCourseCommand(requireNotNull(instructor.id)))
         return courseCreator.updateInfo(requireNotNull(created.id), CourseFixture.createUpdateCourseInfoCommand())
+    }
+
+    protected fun preparePublishedCourse(): Course {
+        val courseId = requireNotNull(prepareCourse().id)
+        coursePublisher.submitForReview(courseId)
+        return coursePublisher.publish(courseId)
+    }
+
+    protected fun prepareEnrollment(): Enrollment {
+        val member = prepareActiveMember()
+        val course = preparePublishedCourse()
+        return enroller.enroll(EnrollCommand(requireNotNull(member.id), requireNotNull(course.id)))
     }
 }

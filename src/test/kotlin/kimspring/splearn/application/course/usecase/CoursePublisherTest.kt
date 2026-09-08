@@ -3,12 +3,8 @@ package kimspring.splearn.application.course.usecase
 import io.kotest.matchers.shouldBe
 import kimspring.splearn.domain.course.CourseStatus
 import kimspring.splearn.support.test.BaseApplicationServiceTest
-import org.springframework.beans.factory.annotation.Autowired
 
 class CoursePublisherTest : BaseApplicationServiceTest() {
-    @Autowired
-    private lateinit var coursePublisher: CoursePublisher
-
     init {
         test("submitForReview") {
             val courseId = requireNotNull(prepareCourse().id)

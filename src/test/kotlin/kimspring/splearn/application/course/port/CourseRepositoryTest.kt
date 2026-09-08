@@ -1,55 +1,28 @@
 package kimspring.splearn.application.course.port
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.FunSpec
-import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import kimspring.splearn.application.instructor.port.InstructorRepository
-import kimspring.splearn.application.member.port.MemberRepository
 import kimspring.splearn.domain.course.CourseFixture
-import kimspring.splearn.domain.instructor.Instructor
-import kimspring.splearn.domain.instructor.InstructorFixture
-import kimspring.splearn.domain.member.MemberFixture
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import kimspring.splearn.support.test.BaseRepositoryTest
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
-@SpringBootTest
-@Transactional
-class CourseRepositoryTest : FunSpec() {
-    @Autowired
-    private lateinit var courseRepository: CourseRepository
-
-    @Autowired
-    private lateinit var memberRepository: MemberRepository
-
-    @Autowired
-    private lateinit var instructorRepository: InstructorRepository
-
-    private val now = LocalDateTime.of(2024, 1, 1, 0, 0)
-
+class CourseRepositoryTest : BaseRepositoryTest() {
     init {
-        extension(SpringExtension())
-
         test("saveAndFindById") {
-            val instructor = saveActiveInstructor()
-
-            val saved = courseRepository.save(CourseFixture.createCourse(instructor))
+            val saved = prepareCourse()
 
             val id = saved.id.shouldNotBeNull()
             courseRepository.findById(id) shouldBe saved
         }
 
         test("findByTitleContaining") {
-            val instructor = saveActiveInstructor()
-            val hello = courseRepository.save(CourseFixture.createCourse(instructor, "Hello Spring"))
-            val cleanSpring = courseRepository.save(CourseFixture.createCourse(instructor, "Clean Spring 2"))
-            val cleanCode = courseRepository.save(CourseFixture.createCourse(instructor, "Clean Code"))
+            val instructor = prepareActiveInstructor()
+            val hello = prepareCourse(instructor, "Hello Spring")
+            val cleanSpring = prepareCourse(instructor, "Clean Spring 2")
+            val cleanCode = prepareCourse(instructor, "Clean Code")
 
             courseRepository.findByTitleContaining("Spring") shouldContainExactlyInAnyOrder listOf(hello, cleanSpring)
             courseRepository.findByTitleContaining("Clean") shouldContainExactlyInAnyOrder
@@ -59,36 +32,30 @@ class CourseRepositoryTest : FunSpec() {
         }
 
         test("findByInstructorId") {
-            val instructor = saveActiveInstructor()
-            val instructor2 = saveActiveInstructor()
-            val course = courseRepository.save(CourseFixture.createCourse(instructor, "Title"))
-            val course2 = courseRepository.save(CourseFixture.createCourse(instructor2, "Title2"))
+            val instructor = prepareActiveInstructor()
+            val instructor2 = prepareActiveInstructor()
+            val course = prepareCourse(instructor, "Title")
+            val course2 = prepareCourse(instructor2, "Title2")
 
             courseRepository.findByInstructorId(requireNotNull(instructor.id)) shouldHaveSingleElement course
             courseRepository.findByInstructorId(requireNotNull(instructor2.id)) shouldHaveSingleElement course2
         }
 
         test("findByInstructorIdAndTitle") {
-            val instructor = saveActiveInstructor()
-            val course = courseRepository.save(CourseFixture.createCourse(instructor, "Title"))
+            val instructor = prepareActiveInstructor()
+            val course = prepareCourse(instructor, "Title")
 
             courseRepository.findByInstructorIdAndTitle(requireNotNull(instructor.id), "Title") shouldBe course
             courseRepository.findByInstructorIdAndTitle(requireNotNull(instructor.id), "No Such") shouldBe null
         }
 
         test("uniqueTitleAndInstructor") {
-            val instructor = saveActiveInstructor()
-            courseRepository.save(CourseFixture.createCourse(instructor, "Title"))
+            val instructor = prepareActiveInstructor()
+            prepareCourse(instructor, "Title")
 
             shouldThrow<DataIntegrityViolationException> {
                 courseRepository.save(CourseFixture.createCourse(instructor, "Title"))
             }
         }
-    }
-
-    private fun saveActiveInstructor(): Instructor {
-        val member = memberRepository.save(MemberFixture.createMember())
-        val activated = memberRepository.save(member.activate(now))
-        return instructorRepository.save(InstructorFixture.createActiveInstructor(activated))
     }
 }

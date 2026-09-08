@@ -21,4 +21,7 @@ enum class ErrorCode(
     COURSE_NOT_FOUND(404, "CO001", "강의를 찾을 수 없습니다."),
     INVALID_COURSE_STATE(400, "CO002", "강의 상태가 올바르지 않습니다."),
     COURSE_VALIDATION_FAILED(400, "CO003", "강의 정보가 올바르지 않습니다."),
+    ENROLLMENT_NOT_FOUND(404, "E001", "수강을 찾을 수 없습니다."),
+    INVALID_ENROLLMENT_STATE(400, "E002", "수강 상태가 올바르지 않습니다."),
+    DUPLICATE_ENROLLMENT(409, "E003", "이미 수강 신청한 강의입니다."),
 }

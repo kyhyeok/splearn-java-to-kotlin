@@ -79,6 +79,12 @@ class MemberTest : FunSpec() {
             member.isActive() shouldBe false
         }
 
+        test("ensureActive") {
+            shouldThrow<InvalidMemberStateException> { member.ensureActive() }
+
+            member.activate(now).ensureActive()
+        }
+
         test("invalidEmail") {
             shouldThrow<IllegalArgumentException> {
                 Member.register(MemberRegisterInfo("invaluid email", "KimHyeok", "verysecret"), passwordEncoder, now)
