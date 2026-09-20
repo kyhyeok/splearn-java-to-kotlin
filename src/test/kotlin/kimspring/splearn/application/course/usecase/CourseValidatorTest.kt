@@ -1,10 +1,12 @@
 package kimspring.splearn.application.course.usecase
 
+import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldHaveSize
 import kimspring.splearn.application.course.port.CourseRepository
 import kimspring.splearn.domain.course.CourseFixture
 import kimspring.splearn.domain.course.CourseValidationException
+import kimspring.splearn.domain.curriculum.InvalidCurriculumException
 import kimspring.splearn.support.test.BaseApplicationServiceTest
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -62,6 +64,37 @@ class CourseValidatorTest : BaseApplicationServiceTest() {
                     )
                 }
             e.errors shouldHaveSize 1
+        }
+
+        test("validateForReview") {
+            val course = prepareCourseWithCurriculum()
+
+            shouldNotThrowAny { courseValidator.validateForReview(course) }
+        }
+
+        test("submitForReviewFailInvalidCurriculum") {
+            val course = prepareCourse()
+            val curriculum = prepareCurriculumSectionsAndLessons(course)
+            // S3 의 유일한 수업을 지워 빈 섹션을 만든다
+            curriculumCoordinator.removeLesson(requireNotNull(curriculum.id), 2, 0)
+
+            shouldThrow<InvalidCurriculumException> { coursePublisher.submitForReview(requireNotNull(course.id)) }
+        }
+
+        test("validateForPublish") {
+            val course = prepareCourseWithCurriculum()
+
+            shouldNotThrowAny { courseValidator.validateForPublish(course) }
+        }
+
+        test("publishFailInvalidCurriculum") {
+            val course = prepareCourse()
+            val courseId = requireNotNull(course.id)
+            val curriculum = prepareCurriculumSectionsAndLessons(course)
+            coursePublisher.submitForReview(courseId)
+            curriculumCoordinator.removeLesson(requireNotNull(curriculum.id), 2, 0)
+
+            shouldThrow<InvalidCurriculumException> { coursePublisher.publish(courseId) }
         }
     }
 }

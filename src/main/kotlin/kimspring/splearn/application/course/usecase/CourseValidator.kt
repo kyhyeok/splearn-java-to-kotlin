@@ -6,7 +6,7 @@ import kimspring.splearn.domain.course.Course
 import kimspring.splearn.domain.instructor.Instructor
 
 /**
- * 강의 정보가 도메인 밖의 조건(중복 등)을 만족하는지 검증한다
+ * 강의 정보가 도메인 밖의 조건(중복, 커리큘럼 구성 등)을 만족하는지 검증한다
  */
 interface CourseValidator {
     fun validateForCreate(
@@ -18,4 +18,8 @@ interface CourseValidator {
         course: Course,
         command: UpdateCourseInfoCommand,
     )
+
+    fun validateForReview(course: Course)
+
+    fun validateForPublish(course: Course)
 }

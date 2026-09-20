@@ -17,7 +17,8 @@ logging:
     kimspring.splearn: INFO
 
 jwt:
-  secret: FHhzHAYtX7ttYa8qgzyE09XK9uVUWqh6FBApgmEDpNU=
+  # 기본값 없음 — 미설정 시 기동 실패가 의도된 동작이다
+  secret: ${JWT_SECRET}
 
 springdoc:
   swagger-ui:

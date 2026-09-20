@@ -116,6 +116,9 @@ PENDING(등록 대기) → ACTIVE(등록 완료) → DEACTIVATED(탈퇴)
 # MySQL 컨테이너 시작 (Spring Boot 실행 시 자동 시작)
 docker compose up -d
 
+# JWT 서명 키 (Base64 32바이트). 미설정 시 기동에 실패한다
+export JWT_SECRET=$(openssl rand -base64 32)
+
 # 애플리케이션 실행
 ./gradlew bootRun
 ```
@@ -152,6 +155,8 @@ Flyway로 스키마를 관리합니다. 마이그레이션 파일은 `src/main/r
 | V2 | Spring Data JDBC 집계 모델에 맞게 FK 방향 전환 |
 | V3 | FK 컬럼명을 Spring Data JDBC 명명 규칙으로 변경 |
 | V4 | `profile_address` 컬럼 크기 조정 (VARCHAR 15) |
+| V8 | `curriculum`, `section`, `lesson` 테이블 생성 (섹션·수업 순서는 `section_order`·`lesson_order`) |
+| V9 | `curriculum.version` 컬럼 추가 (낙관적 락) |
 
 ---
 

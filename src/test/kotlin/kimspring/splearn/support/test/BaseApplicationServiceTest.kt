@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import kimspring.splearn.application.course.usecase.CourseCreator
 import kimspring.splearn.application.course.usecase.CoursePublisher
+import kimspring.splearn.application.curriculum.usecase.CurriculumCoordinator
+import kimspring.splearn.application.curriculum.usecase.CurriculumFinder
 import kimspring.splearn.application.enrollment.command.EnrollCommand
 import kimspring.splearn.application.enrollment.usecase.Enroller
 import kimspring.splearn.application.instructor.usecase.InstructorApplication
@@ -11,6 +13,7 @@ import kimspring.splearn.application.member.usecase.MemberLifecycle
 import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.course.Course
 import kimspring.splearn.domain.course.CourseFixture
+import kimspring.splearn.domain.curriculum.Curriculum
 import kimspring.splearn.domain.enrollment.Enrollment
 import kimspring.splearn.domain.instructor.Instructor
 import kimspring.splearn.domain.member.Member
@@ -43,6 +46,12 @@ abstract class BaseApplicationServiceTest : FunSpec() {
     protected lateinit var coursePublisher: CoursePublisher
 
     @Autowired
+    protected lateinit var curriculumCoordinator: CurriculumCoordinator
+
+    @Autowired
+    protected lateinit var curriculumFinder: CurriculumFinder
+
+    @Autowired
     protected lateinit var enroller: Enroller
 
     init {
@@ -66,8 +75,27 @@ abstract class BaseApplicationServiceTest : FunSpec() {
         return courseCreator.updateInfo(requireNotNull(created.id), CourseFixture.createUpdateCourseInfoCommand())
     }
 
+    /** 강의 생성 시 함께 만들어진 빈 커리큘럼에 섹션 3개(S1·S2·S3)와 수업 5개(L1~L5)를 채운다 */
+    protected fun prepareCurriculumSectionsAndLessons(course: Course): Curriculum {
+        val curriculumId = requireNotNull(curriculumFinder.findByCourse(requireNotNull(course.id)).id)
+        curriculumCoordinator.addSection(curriculumId, "S1")
+        curriculumCoordinator.addLesson(curriculumId, 0, "L1")
+        curriculumCoordinator.addLesson(curriculumId, 0, "L2")
+        curriculumCoordinator.addSection(curriculumId, "S2")
+        curriculumCoordinator.addLesson(curriculumId, 1, "L3")
+        curriculumCoordinator.addLesson(curriculumId, 1, "L4")
+        curriculumCoordinator.addSection(curriculumId, "S3")
+        return curriculumCoordinator.addLesson(curriculumId, 2, "L5")
+    }
+
+    protected fun prepareCourseWithCurriculum(): Course {
+        val course = prepareCourse()
+        prepareCurriculumSectionsAndLessons(course)
+        return course
+    }
+
     protected fun preparePublishedCourse(): Course {
-        val courseId = requireNotNull(prepareCourse().id)
+        val courseId = requireNotNull(prepareCourseWithCurriculum().id)
         coursePublisher.submitForReview(courseId)
         return coursePublisher.publish(courseId)
     }

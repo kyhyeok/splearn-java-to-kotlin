@@ -44,7 +44,7 @@ internal fun onlyCallReadOnlyMethodsOfClassesIn(packageIdentifier: String): Arch
         }
     }
 
-private val ALLOWED_METHOD_PREFIXES = listOf("get", "is", "ensure")
+private val ACCESSOR_PATTERN = Regex("^(get|is)[A-Z]")
 
 private val DATA_CLASS_STRUCTURAL_METHODS = setOf("copy", "equals", "hashCode", "toString")
 
@@ -52,8 +52,14 @@ private val DATA_CLASS_STRUCTURAL_METHODS = setOf("copy", "equals", "hashCode", 
 // 클래스 단위 면제는 activate 같은 상태 전이 메서드 호출까지 통과시킨다
 private fun Iterable<JavaMethodCall>.disallowedMutationCalls(): List<JavaMethodCall> =
     filterNot { it.targetOwner.isEnum }
-        .filterNot { call -> ALLOWED_METHOD_PREFIXES.any { call.target.name.startsWith(it) } }
+        .filterNot { it.isReadOnlyCall() }
         .filterNot { call -> call.targetOwner.isKotlinDataClass() && call.target.name.isDataClassStructuralMethod() }
+
+// 인자 없는 get/is 접근자와 ensure 계열만 조회로 본다. getOrCreate(x) 처럼 인자를 받는 get 메서드는 통과시키지 않는다.
+// 이름 기반 판정의 한계로, 인자 없이 상태를 바꾸는 get 메서드까지는 막지 못한다
+private fun JavaMethodCall.isReadOnlyCall(): Boolean =
+    target.name.startsWith("ensure") ||
+        (ACCESSOR_PATTERN.containsMatchIn(target.name) && target.rawParameterTypes.isEmpty())
 
 // Java의 record 판정(ACC_RECORD 플래그)에 대응 — data class는 JVM record가 아니어서
 // ArchUnit isRecord()로 판정할 수 없고, kotlin.Metadata를 읽는 kotlin-reflect로 판정한다

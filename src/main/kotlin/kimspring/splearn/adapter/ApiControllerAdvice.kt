@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException
 import kimspring.splearn.adapter.webapi.dto.ErrorResponse
 import kimspring.splearn.domain.shared.ErrorCode
 import kimspring.splearn.domain.shared.SplearnException
+import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
@@ -37,7 +38,8 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
         status: HttpStatusCode,
         request: WebRequest,
     ): ResponseEntity<Any> {
-        log.warn { "유효성 검사 실패: ${ex.message}" }
+        // ex.message 는 거부된 입력값(비밀번호 포함)을 담으므로 필드명과 제약 코드만 남긴다
+        log.warn { "유효성 검사 실패: ${ex.bindingResult.fieldErrors.map { "${it.field}:${it.code}" }}" }
         val fields =
             ex.bindingResult.fieldErrors.map { fieldError ->
                 ErrorResponse.FieldError(
@@ -62,6 +64,12 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
     fun handleAccessDenied(e: AccessDeniedException): ResponseEntity<ErrorResponse> {
         log.warn { "접근 거부: ${e.message}" }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.of(ErrorCode.FORBIDDEN))
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException::class)
+    fun handleOptimisticLocking(e: OptimisticLockingFailureException): ResponseEntity<ErrorResponse> {
+        log.warn { "동시 수정 충돌: ${e.message}" }
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.of(ErrorCode.CONCURRENT_MODIFICATION))
     }
 
     @ExceptionHandler(ConstraintViolationException::class)

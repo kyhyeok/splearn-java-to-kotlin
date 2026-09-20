@@ -3,11 +3,14 @@ package kimspring.splearn.support.test
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import kimspring.splearn.application.course.port.CourseRepository
+import kimspring.splearn.application.curriculum.port.CurriculumRepository
 import kimspring.splearn.application.enrollment.port.EnrollmentRepository
 import kimspring.splearn.application.instructor.port.InstructorRepository
 import kimspring.splearn.application.member.port.MemberRepository
 import kimspring.splearn.domain.course.Course
 import kimspring.splearn.domain.course.CourseFixture
+import kimspring.splearn.domain.curriculum.Curriculum
+import kimspring.splearn.domain.curriculum.CurriculumFixture
 import kimspring.splearn.domain.enrollment.Enrollment
 import kimspring.splearn.domain.enrollment.EnrollmentFixture
 import kimspring.splearn.domain.instructor.Instructor
@@ -38,6 +41,9 @@ abstract class BaseRepositoryTest : FunSpec() {
     @Autowired
     protected lateinit var enrollmentRepository: EnrollmentRepository
 
+    @Autowired
+    protected lateinit var curriculumRepository: CurriculumRepository
+
     private val now = LocalDateTime.of(2024, 1, 1, 0, 0)
 
     init {
@@ -64,4 +70,7 @@ abstract class BaseRepositoryTest : FunSpec() {
         member: Member,
         course: Course,
     ): Enrollment = enrollmentRepository.save(EnrollmentFixture.createEnrollment(member, course))
+
+    protected fun prepareCurriculum(course: Course = prepareCourse()): Curriculum =
+        curriculumRepository.save(CurriculumFixture.createCurriculum(course))
 }

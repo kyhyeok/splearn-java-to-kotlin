@@ -3,6 +3,7 @@ package kimspring.splearn.application.course
 import kimspring.splearn.application.course.command.CreateCourseCommand
 import kimspring.splearn.application.course.command.UpdateCourseInfoCommand
 import kimspring.splearn.application.course.port.CourseRepository
+import kimspring.splearn.application.course.port.CurriculumCreator
 import kimspring.splearn.application.course.usecase.CourseCreator
 import kimspring.splearn.application.course.usecase.CoursePublisher
 import kimspring.splearn.application.course.usecase.CourseValidator
@@ -16,13 +17,16 @@ class CourseModifyService(
     private val courseRepository: CourseRepository,
     private val courseValidator: CourseValidator,
     private val instructorFinder: InstructorFinder,
+    private val curriculumCreator: CurriculumCreator,
     private val clock: Clock,
 ) : CourseCreator,
     CoursePublisher {
     override fun create(command: CreateCourseCommand): Course {
         val instructor = instructorFinder.find(command.instructorId)
         courseValidator.validateForCreate(instructor, command)
-        return courseRepository.save(Course.create(instructor, command.title, command.description, clock.now()))
+        val saved = courseRepository.save(Course.create(instructor, command.title, command.description, clock.now()))
+        curriculumCreator.createCurriculum(saved)
+        return saved
     }
 
     override fun updateInfo(
@@ -34,11 +38,17 @@ class CourseModifyService(
         return courseRepository.save(course.updateInfo(command.title, command.description))
     }
 
-    override fun submitForReview(courseId: Long): Course =
-        courseRepository.save(courseRepository.getById(courseId).submitForReview())
+    override fun submitForReview(courseId: Long): Course {
+        val course = courseRepository.getById(courseId)
+        courseValidator.validateForReview(course)
+        return courseRepository.save(course.submitForReview())
+    }
 
-    override fun publish(courseId: Long): Course =
-        courseRepository.save(courseRepository.getById(courseId).publish(clock.now()))
+    override fun publish(courseId: Long): Course {
+        val course = courseRepository.getById(courseId)
+        courseValidator.validateForPublish(course)
+        return courseRepository.save(course.publish(clock.now()))
+    }
 
     override fun archive(courseId: Long): Course =
         courseRepository.save(courseRepository.getById(courseId).archive(clock.now()))

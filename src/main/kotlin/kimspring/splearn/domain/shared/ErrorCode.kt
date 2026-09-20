@@ -10,6 +10,7 @@ enum class ErrorCode(
     FORBIDDEN(403, "C003", "접근 권한이 없습니다."),
     METHOD_NOT_ALLOWED(405, "C004", "지원하지 않는 HTTP 메서드입니다."),
     GATEWAY_TIMEOUT(504, "C005", "외부 서비스 응답 시간이 초과되었습니다."),
+    CONCURRENT_MODIFICATION(409, "C006", "다른 요청과 동시에 수정되었습니다. 다시 시도해주세요."),
     MEMBER_NOT_FOUND(404, "M001", "회원을 찾을 수 없습니다."),
     DUPLICATE_EMAIL(409, "M002", "이미 사용중인 이메일입니다."),
     DUPLICATE_PROFILE(409, "M003", "이미 존재하는 프로필 주소입니다."),
@@ -24,4 +25,7 @@ enum class ErrorCode(
     ENROLLMENT_NOT_FOUND(404, "E001", "수강을 찾을 수 없습니다."),
     INVALID_ENROLLMENT_STATE(400, "E002", "수강 상태가 올바르지 않습니다."),
     DUPLICATE_ENROLLMENT(409, "E003", "이미 수강 신청한 강의입니다."),
+    CURRICULUM_NOT_FOUND(404, "CU001", "커리큘럼을 찾을 수 없습니다."),
+    INVALID_CURRICULUM(400, "CU002", "커리큘럼 구성이 올바르지 않습니다."),
+    LESSON_NOT_FOUND(404, "CU003", "수업을 찾을 수 없습니다."),
 }
