@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # gitleaks 가 전체 이력을 스캔하려면 얕은 체크아웃이면 안 된다
           fetch-depth: 0
