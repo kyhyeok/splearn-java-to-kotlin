@@ -220,7 +220,7 @@ class MemberApi(private val register: MemberRegister, private val finder: Member
 
     // GET/PATCH(조회·수정): 200 OK
     @GetMapping("/api/members/{id}")
-    fun find(@PathVariable id: Long): MemberResponse = MemberResponse.from(finder.find(id))
+    fun find(@PathVariable id: Long): MemberResponse = MemberResponse.from(finder.get(id))
 }
 ```
 

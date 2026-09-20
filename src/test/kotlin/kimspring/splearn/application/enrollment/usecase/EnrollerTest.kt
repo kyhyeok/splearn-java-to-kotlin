@@ -5,6 +5,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import kimspring.splearn.application.enrollment.command.EnrollCommand
 import kimspring.splearn.domain.enrollment.DuplicateEnrollmentException
+import kimspring.splearn.domain.enrollment.EnrollmentNotFoundException
 import kimspring.splearn.domain.enrollment.EnrollmentStatus
 import kimspring.splearn.support.test.BaseApplicationServiceTest
 
@@ -35,6 +36,10 @@ class EnrollerTest : BaseApplicationServiceTest() {
             studying.status shouldBe EnrollmentStatus.STUDYING
         }
 
+        test("startStudyingFailNotFound") {
+            shouldThrow<EnrollmentNotFoundException> { enroller.startStudying(Long.MAX_VALUE) }
+        }
+
         test("complete") {
             val enrollmentId = requireNotNull(prepareEnrollment().id)
             enroller.startStudying(enrollmentId)
@@ -42,6 +47,10 @@ class EnrollerTest : BaseApplicationServiceTest() {
             val completed = enroller.complete(enrollmentId)
 
             completed.status shouldBe EnrollmentStatus.COMPLETED
+        }
+
+        test("completeFailNotFound") {
+            shouldThrow<EnrollmentNotFoundException> { enroller.complete(Long.MAX_VALUE) }
         }
     }
 }

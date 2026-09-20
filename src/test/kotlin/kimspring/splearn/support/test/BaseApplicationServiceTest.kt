@@ -77,7 +77,7 @@ abstract class BaseApplicationServiceTest : FunSpec() {
 
     /** 강의 생성 시 함께 만들어진 빈 커리큘럼에 섹션 3개(S1·S2·S3)와 수업 5개(L1~L5)를 채운다 */
     protected fun prepareCurriculumSectionsAndLessons(course: Course): Curriculum {
-        val curriculumId = requireNotNull(curriculumFinder.findByCourse(requireNotNull(course.id)).id)
+        val curriculumId = requireNotNull(curriculumFinder.getByCourse(requireNotNull(course.id)).id)
         curriculumCoordinator.addSection(curriculumId, "S1")
         curriculumCoordinator.addLesson(curriculumId, 0, "L1")
         curriculumCoordinator.addLesson(curriculumId, 0, "L2")

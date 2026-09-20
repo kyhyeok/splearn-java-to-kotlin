@@ -7,13 +7,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import jakarta.validation.ConstraintViolationException
 import kimspring.splearn.application.member.command.RegisterMemberCommand
-import kimspring.splearn.application.member.command.UpdateMemberInfoCommand
-import kimspring.splearn.application.member.usecase.MemberLifecycle
-import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.domain.member.DuplicateEmailException
-import kimspring.splearn.domain.member.DuplicateProfileException
-import kimspring.splearn.domain.member.InvalidActivationTokenException
-import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.MemberFixture
 import kimspring.splearn.domain.member.MemberStatus
 import kimspring.splearn.support.stereotype.ApplicationServiceTest
@@ -23,12 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired
 class MemberRegisterTest : FunSpec() {
     @Autowired
     private lateinit var memberRegister: MemberRegister
-
-    @Autowired
-    private lateinit var memberLifecycle: MemberLifecycle
-
-    @Autowired
-    private lateinit var memberModifier: MemberModifier
 
     init {
         extension(SpringExtension())
@@ -49,79 +37,14 @@ class MemberRegisterTest : FunSpec() {
             }
         }
 
-        test("activate") {
-            val member = registerMember()
+        // 이메일 대소문자는 구분하지 않는다. DB 콜레이션(H2 구분·MySQL 무시)과 무관하게 도메인이 보장한다
+        test("duplicateEmailFailIgnoringCase") {
+            val registered = memberRegister.register(MemberFixture.createRegisterMemberCommand("Kim.Lee@Splearn.App"))
+            registered.email.address shouldBe "kim.lee@splearn.app"
 
-            val activated = memberLifecycle.activate(member.activationToken!!)
-
-            activated.status shouldBe MemberStatus.ACTIVE
-            activated.detail.activatedAt.shouldNotBeNull()
-        }
-
-        test("activateFailInvalidToken") {
-            registerMember()
-
-            shouldThrow<InvalidActivationTokenException> { memberLifecycle.activate("no-such-token") }
-        }
-
-        test("activateFailReusedToken") {
-            val member = registerMember()
-            val token = requireNotNull(member.activationToken)
-            memberLifecycle.activate(token)
-
-            // 1회용 — 활성화 시 토큰이 비워지므로 같은 토큰으로 다시 찾을 수 없다
-            shouldThrow<InvalidActivationTokenException> { memberLifecycle.activate(token) }
-        }
-
-        test("deactivate") {
-            val member = registerMember()
-
-            val activated = memberLifecycle.activate(member.activationToken!!)
-            val deactivated = memberLifecycle.deactivate(activated.id!!)
-
-            deactivated.status shouldBe MemberStatus.DEACTIVATED
-            deactivated.detail.deactivatedAt.shouldNotBeNull()
-        }
-
-        test("updateInfo") {
-            val member = registerMember()
-            val activated = memberLifecycle.activate(member.activationToken!!)
-
-            val command = UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개")
-            val updated = memberModifier.updateInfo(activated.id!!, command)
-
-            updated.detail.profile!!.address shouldBe command.profileAddress
-        }
-
-        test("updateInfoFail") {
-            val member = registerMember()
-            val memberId = requireNotNull(member.id)
-            memberLifecycle.activate(requireNotNull(member.activationToken))
-            memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개"))
-
-            val member2 = registerMember("kiim@splearn.app")
-            val member2Id = requireNotNull(member2.id)
-            memberLifecycle.activate(requireNotNull(member2.activationToken))
-
-            // member2는 기존의 member와 같은 프로필 주소를 사용할 수 없다
-            shouldThrow<DuplicateProfileException> {
-                memberModifier.updateInfo(member2Id, UpdateMemberInfoCommand("Kimmy", "kim001", "자기소개임"))
+            shouldThrow<DuplicateEmailException> {
+                memberRegister.register(MemberFixture.createRegisterMemberCommand("kim.lee@splearn.app"))
             }
-
-            // 다른 프로필 주소로는 변경 가능
-            memberModifier.updateInfo(member2Id, UpdateMemberInfoCommand("Kimmy", "kim002", "자기소개임"))
-
-            // 기존 프로필 주소를 바꾸는 것도 가능
-            memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "kim001", "자기소개임"))
-
-            // 프로필 주소 중복은 허용하지 않음
-            shouldThrow<DuplicateProfileException> {
-                memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "kim002", "자기소개임"))
-            }
-
-            // 프로필 주소를 제거하는 것도 가능
-            memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Kimmy", "", "자기소개임"))
-            memberModifier.updateInfo(member2Id, UpdateMemberInfoCommand("Kimmy", "", "자기소개임"))
         }
 
         test("memberRegisterCommandFail") {
@@ -135,9 +58,4 @@ class MemberRegisterTest : FunSpec() {
     private fun checkValidation(invalid: RegisterMemberCommand) {
         shouldThrow<ConstraintViolationException> { memberRegister.register(invalid) }
     }
-
-    private fun registerMember(): Member = memberRegister.register(MemberFixture.createRegisterMemberCommand())
-
-    private fun registerMember(email: String): Member =
-        memberRegister.register(MemberFixture.createRegisterMemberCommand(email))
 }

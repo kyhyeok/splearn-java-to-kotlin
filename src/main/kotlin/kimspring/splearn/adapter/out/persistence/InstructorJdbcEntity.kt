@@ -3,11 +3,13 @@ package kimspring.splearn.adapter.out.persistence
 import kimspring.splearn.domain.instructor.Instructor
 import kimspring.splearn.domain.instructor.InstructorStatus
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Version
 import org.springframework.data.relational.core.mapping.Table
 
 @Table("instructor")
 data class InstructorJdbcEntity(
     @Id val id: Long? = null,
+    @Version val version: Long? = null,
     val memberId: Long,
     val status: InstructorStatus,
 ) {
@@ -16,6 +18,7 @@ data class InstructorJdbcEntity(
             id = id,
             memberId = memberId,
             status = status,
+            version = version,
         )
 
     companion object {
@@ -24,6 +27,7 @@ data class InstructorJdbcEntity(
                 id = instructor.id,
                 memberId = instructor.memberId,
                 status = instructor.status,
+                version = instructor.version,
             )
     }
 }

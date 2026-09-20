@@ -22,7 +22,7 @@ class CourseModifyService(
 ) : CourseCreator,
     CoursePublisher {
     override fun create(command: CreateCourseCommand): Course {
-        val instructor = instructorFinder.find(command.instructorId)
+        val instructor = instructorFinder.get(command.instructorId)
         courseValidator.validateForCreate(instructor, command)
         val saved = courseRepository.save(Course.create(instructor, command.title, command.description, clock.now()))
         curriculumCreator.createCurriculum(saved)

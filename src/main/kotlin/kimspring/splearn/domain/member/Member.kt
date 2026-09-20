@@ -13,6 +13,8 @@ data class Member(
     val detail: MemberDetail,
     // 가입 메일로만 전달되는 1회용 토큰. 이메일 소유 확인이 활성화의 목적이므로 순번 id 로는 활성화할 수 없다
     val activationToken: String? = null,
+    // 낙관적 락 버전. 같은 상태를 읽은 두 전이가 모두 성공해 나중 것이 앞선 결과를 덮는 것을 막는다
+    val version: Long? = null,
 ) {
     fun activate(now: LocalDateTime): Member {
         if (status != MemberStatus.PENDING) throw InvalidMemberStateException("PENDING 상태가 아닙니다.")

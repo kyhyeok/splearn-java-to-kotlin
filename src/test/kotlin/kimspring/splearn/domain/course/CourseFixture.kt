@@ -4,6 +4,7 @@ import kimspring.splearn.application.course.command.CreateCourseCommand
 import kimspring.splearn.application.course.command.UpdateCourseInfoCommand
 import kimspring.splearn.domain.instructor.Instructor
 import kimspring.splearn.domain.instructor.InstructorFixture
+import kimspring.splearn.domain.member.MemberFixture
 import org.instancio.Instancio
 import org.instancio.Select.field
 import java.time.LocalDateTime
@@ -42,7 +43,7 @@ object CourseFixture {
             .publish(FIXED_NOW)
     }
 
-    fun createPublishedCourse(id: Long = 1L): Course =
+    fun createPublishedCourse(id: Long = MemberFixture.randomId()): Course =
         createPublishedCourse(InstructorFixture.createActiveInstructor()).copy(id = id)
 
     private fun randomTitle(): String =

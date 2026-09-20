@@ -1,10 +1,13 @@
 services:
   mysql:
-    image: 'mysql:latest'
+    # latest 는 재현성이 없다. V2 의 DROP CONSTRAINT 문법은 8.0.19+ 에 의존한다
+    image: 'mysql:8.4'
     environment:
       - 'MYSQL_DATABASE=splearn'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
       - 'MYSQL_USER=spring'
+      # 값은 .env 에서 읽는다(.env.example 참고). 저장소에 자격증명을 두지 않는다
+      - 'MYSQL_PASSWORD=${MYSQL_PASSWORD}'
+      - 'MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}'
     ports:
-      - '3306:3306'
+      # 루프백에만 바인딩한다. 0.0.0.0 바인딩은 같은 네트워크의 누구나 root 접속을 시도할 수 있다
+      - '127.0.0.1:3306:3306'

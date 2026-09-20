@@ -9,7 +9,7 @@ import kimspring.splearn.support.stereotype.QueryApplicationService
 class CourseQueryService(
     private val courseRepository: CourseRepository,
 ) : CourseFinder {
-    override fun find(courseId: Long): Course = courseRepository.getById(courseId)
+    override fun get(courseId: Long): Course = courseRepository.getById(courseId)
 
     override fun findByTitle(keyword: String): List<Course> = courseRepository.findByTitleContaining(keyword)
 

@@ -7,9 +7,9 @@ import io.kotest.matchers.shouldBe
 class ProfileTest :
     FunSpec({
         test("profile") {
-            Profile("kim")
-            Profile("kim2")
-            Profile("0044")
+            Profile("kim").address shouldBe "kim"
+            Profile("kim2").address shouldBe "kim2"
+            Profile("0044").address shouldBe "0044"
         }
 
         test("profileFail") {

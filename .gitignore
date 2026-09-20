@@ -39,3 +39,6 @@ out/
 ### Tools ###
 .serena/
 .omc/
+
+### Local secrets ###
+.env

@@ -19,7 +19,7 @@ class CourseValidationService(
         instructor: Instructor,
         command: CreateCourseCommand,
     ) {
-        instructor.ensureActive()
+        // 강사 상태 규칙은 Course.create 가 검증한다. 여기서는 도메인이 볼 수 없는 규칙(제목 중복)만 본다
         val instructorId = requireNotNull(instructor.id) { "저장되지 않은 강사입니다." }
         if (courseRepository.findByInstructorIdAndTitle(instructorId, command.title) != null) {
             throw CourseValidationException(listOf("이미 사용중인 강의 제목입니다. ${command.title}"))

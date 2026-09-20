@@ -113,11 +113,15 @@ PENDING(등록 대기) → ACTIVE(등록 완료) → DEACTIVATED(탈퇴)
 ### 로컬 실행
 
 ```bash
-# MySQL 컨테이너 시작 (Spring Boot 실행 시 자동 시작)
+# 개발용 DB 자격증명. compose 가 .env 를 읽는다(.env 는 git 에 올라가지 않는다)
+cp .env.example .env
+
+# MySQL 컨테이너 시작 (Spring Boot 실행 시 자동 시작). 3306 은 127.0.0.1 에만 바인딩된다
 docker compose up -d
 
 # JWT 서명 키 (Base64 32바이트). 미설정 시 기동에 실패한다
 export JWT_SECRET=$(openssl rand -base64 32)
+# 토큰의 iss·aud 클레임과 대조하는 값. 기본값은 splearn / splearn-api 이며 JWT_ISSUER, JWT_AUDIENCE 로 바꿀 수 있다
 
 # 애플리케이션 실행
 ./gradlew bootRun
@@ -170,6 +174,8 @@ Flyway로 스키마를 관리합니다. 마이그레이션 파일은 `src/main/r
 | V8 | `curriculum`, `section`, `lesson` 테이블 생성 (섹션·수업 순서는 `section_order`·`lesson_order`) |
 | V9 | `curriculum.version` 컬럼 추가 (낙관적 락) |
 | V10 | `member.activation_token` 컬럼 추가 (이메일 활성화 토큰) |
+| V11 | `member`·`instructor`·`course`·`enrollment` 에 `version` 컬럼 추가 (낙관적 락) |
+| V12 | `section (curriculum, section_order)`·`lesson (section, lesson_order)` 복합 인덱스 |
 
 ---
 

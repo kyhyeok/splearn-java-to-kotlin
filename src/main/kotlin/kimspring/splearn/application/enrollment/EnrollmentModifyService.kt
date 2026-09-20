@@ -18,8 +18,8 @@ class EnrollmentModifyService(
     private val clock: Clock,
 ) : Enroller {
     override fun enroll(command: EnrollCommand): Enrollment {
-        val member = memberFinder.find(command.memberId)
-        val course = courseFinder.find(command.courseId)
+        val member = memberFinder.get(command.memberId)
+        val course = courseFinder.get(command.courseId)
         checkDuplication(command.memberId, command.courseId)
         return enrollmentRepository.save(Enrollment.enroll(member, course, clock.now()))
     }

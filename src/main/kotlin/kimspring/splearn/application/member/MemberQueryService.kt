@@ -9,5 +9,5 @@ import kimspring.splearn.support.stereotype.QueryApplicationService
 class MemberQueryService(
     private val memberRepository: MemberRepository,
 ) : MemberFinder {
-    override fun find(memberId: Long): Member = memberRepository.getById(memberId)
+    override fun get(memberId: Long): Member = memberRepository.getById(memberId)
 }

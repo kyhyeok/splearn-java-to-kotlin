@@ -12,14 +12,14 @@ class InstructorFinderTest : BaseApplicationServiceTest() {
     private lateinit var instructorFinder: InstructorFinder
 
     init {
-        test("find") {
+        test("get") {
             val instructor = preparePendingInstructor()
 
-            instructorFinder.find(requireNotNull(instructor.id)).id shouldBe instructor.id
+            instructorFinder.get(requireNotNull(instructor.id)).id shouldBe instructor.id
         }
 
-        test("findFail") {
-            shouldThrow<InstructorNotFoundException> { instructorFinder.find(9999L) }
+        test("getFail") {
+            shouldThrow<InstructorNotFoundException> { instructorFinder.get(9999L) }
         }
 
         test("findByMember") {

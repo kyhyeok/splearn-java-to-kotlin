@@ -1,0 +1,5 @@
+# buildUponDefaultConfig = true — 기본 설정 위에 이 파일이 덮어쓴다
+style:
+  MagicNumber:
+    # ErrorCode 의 HTTP 상태 코드처럼 enum 상수의 인자는 상수 이름이 의미를 준다
+    ignoreEnums: true

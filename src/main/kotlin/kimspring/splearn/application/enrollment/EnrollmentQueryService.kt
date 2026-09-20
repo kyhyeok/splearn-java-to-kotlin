@@ -9,7 +9,7 @@ import kimspring.splearn.support.stereotype.QueryApplicationService
 class EnrollmentQueryService(
     private val enrollmentRepository: EnrollmentRepository,
 ) : EnrollmentFinder {
-    override fun find(enrollmentId: Long): Enrollment = enrollmentRepository.getById(enrollmentId)
+    override fun get(enrollmentId: Long): Enrollment = enrollmentRepository.getById(enrollmentId)
 
     override fun findByMember(memberId: Long): List<Enrollment> = enrollmentRepository.findByMemberId(memberId)
 

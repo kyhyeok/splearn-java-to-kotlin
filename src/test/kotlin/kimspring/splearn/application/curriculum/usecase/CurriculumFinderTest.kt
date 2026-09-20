@@ -20,14 +20,14 @@ class CurriculumFinderTest : BaseApplicationServiceTest() {
     private lateinit var curriculumRepository: CurriculumRepository
 
     init {
-        test("find") {
+        test("get") {
             val curriculum = saveCurriculum()
 
-            curriculumFinder.find(requireNotNull(curriculum.id)) shouldBe curriculum
+            curriculumFinder.get(requireNotNull(curriculum.id)) shouldBe curriculum
         }
 
-        test("findFail") {
-            shouldThrow<CurriculumNotFoundException> { curriculumFinder.find(Long.MAX_VALUE) }
+        test("getFail") {
+            shouldThrow<CurriculumNotFoundException> { curriculumFinder.get(Long.MAX_VALUE) }
         }
 
         test("findWithSections") {
@@ -37,7 +37,7 @@ class CurriculumFinderTest : BaseApplicationServiceTest() {
                     section("S1", lesson("L2")),
                 )
 
-            val found = curriculumFinder.find(requireNotNull(curriculum.id))
+            val found = curriculumFinder.get(requireNotNull(curriculum.id))
 
             SectionContent.from(found) shouldContainExactly
                 listOf(
@@ -46,14 +46,14 @@ class CurriculumFinderTest : BaseApplicationServiceTest() {
                 )
         }
 
-        test("findByCourse") {
+        test("getByCourse") {
             val curriculum = saveCurriculum()
 
-            curriculumFinder.findByCourse(curriculum.courseId).id shouldBe curriculum.id
+            curriculumFinder.getByCourse(curriculum.courseId).id shouldBe curriculum.id
         }
 
-        test("findByCourseFail") {
-            shouldThrow<CurriculumNotFoundException> { curriculumFinder.findByCourse(Long.MAX_VALUE) }
+        test("getByCourseFail") {
+            shouldThrow<CurriculumNotFoundException> { curriculumFinder.getByCourse(Long.MAX_VALUE) }
         }
 
         test("firstLesson") {
@@ -112,7 +112,7 @@ class CurriculumFinderTest : BaseApplicationServiceTest() {
     private fun saveCurriculum(vararg sectionContents: SectionContent): Curriculum {
         val course = prepareCourse()
         val curriculum =
-            sectionContents.fold(curriculumFinder.findByCourse(requireNotNull(course.id))) { acc, content ->
+            sectionContents.fold(curriculumFinder.getByCourse(requireNotNull(course.id))) { acc, content ->
                 content.lessons.fold(acc.addSection(content.title)) { withSection, lessonContent ->
                     withSection.addLesson(withSection.sections.lastIndex, lessonContent.title)
                 }

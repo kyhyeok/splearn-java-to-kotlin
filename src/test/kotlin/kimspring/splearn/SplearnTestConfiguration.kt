@@ -19,7 +19,7 @@ class SplearnTestConfiguration {
                 subject: String,
                 body: String,
             ) {
-                println("Sending email: $email")
+                // 테스트에서는 보내지 않는다
             }
         }
 

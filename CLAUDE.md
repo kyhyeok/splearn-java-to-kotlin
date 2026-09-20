@@ -87,11 +87,11 @@ LLM의 흔한 코딩 실수를 줄이기 위한 행동 지침.
 **소스 코드를 수정한 후에는 아래를 실행한다.**
 
 ```
-./gradlew detekt   → 리포트를 읽고 주요 발견사항을 사용자에게 요약
+./gradlew detekt   → 실패하면 발견 내용을 읽고 수정한다. 의도된 예외만 baseline 에 넣는다
 ```
 
 - `ktlintCheck`는 Stop hook이 자동으로 실행한다. 위반이 있으면 hook이 exit 2를 반환해 Claude가 강제로 수정을 이어간다.
-- `detekt`는 `ignoreFailures = true`라 빌드를 막지 않으므로 리포트를 직접 읽고 판단한다.
+- `detekt`는 `ignoreFailures = false`다. `config/detekt/baseline.xml` 에 없는 새 발견은 빌드를 깬다. 근거 있는 예외는 `./gradlew detektBaseline` 으로 baseline 을 갱신하고 그 이유를 커밋 메시지에 남긴다.
 - 단순 문서·설정 파일만 수정한 경우에는 생략 가능하다.
 
 ---

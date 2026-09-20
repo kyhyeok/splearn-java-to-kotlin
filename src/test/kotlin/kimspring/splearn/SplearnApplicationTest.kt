@@ -11,6 +11,9 @@ import org.springframework.context.ConfigurableApplicationContext
 
 class SplearnApplicationTest :
     FunSpec({
+        // 단언이 실패해도 static mock 을 해제해야 같은 JVM 의 후속 @SpringBootTest 기동에 영향이 없다
+        afterTest { unmockkStatic(SpringApplication::class) }
+
         test("run") {
             mockkStatic(SpringApplication::class)
             val context = mockk<ConfigurableApplicationContext>()
@@ -19,6 +22,5 @@ class SplearnApplicationTest :
             main(arrayOf())
 
             verify { SpringApplication.run(SplearnApplication::class.java, *anyVararg<String>()) }
-            unmockkStatic(SpringApplication::class)
         }
     })

@@ -19,6 +19,9 @@ logging:
 jwt:
   # 기본값 없음 — 미설정 시 기동 실패가 의도된 동작이다
   secret: ${JWT_SECRET}
+  # 같은 키로 서명된 다른 용도의 토큰을 거절한다. 발급 측은 이 두 값을 iss·aud 클레임에 넣어야 한다
+  issuer: ${JWT_ISSUER:splearn}
+  audience: ${JWT_AUDIENCE:splearn-api}
 
 springdoc:
   swagger-ui:

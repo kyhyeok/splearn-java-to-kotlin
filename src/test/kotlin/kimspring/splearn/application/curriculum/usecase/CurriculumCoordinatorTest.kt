@@ -201,7 +201,7 @@ class CurriculumCoordinatorTest : BaseApplicationServiceTest() {
 
         test("validate") {
             val courseId = requireNotNull(prepareCourse().id)
-            val curriculumId = requireNotNull(curriculumFinder.findByCourse(courseId).id)
+            val curriculumId = requireNotNull(curriculumFinder.getByCourse(courseId).id)
             curriculumCoordinator.addSection(curriculumId, "S0")
             curriculumCoordinator.addLesson(curriculumId, 0, "L0")
 
@@ -213,7 +213,7 @@ class CurriculumCoordinatorTest : BaseApplicationServiceTest() {
             val courseIdWithoutSection = requireNotNull(prepareCourse().id)
 
             val courseIdWithEmptySection = requireNotNull(prepareCourse().id)
-            val curriculumId = requireNotNull(curriculumFinder.findByCourse(courseIdWithEmptySection).id)
+            val curriculumId = requireNotNull(curriculumFinder.getByCourse(courseIdWithEmptySection).id)
             curriculumCoordinator.addSection(curriculumId, "S0")
             curriculumCoordinator.addLesson(curriculumId, 0, "L0")
             curriculumCoordinator.addSection(curriculumId, "S1")
@@ -231,7 +231,7 @@ class CurriculumCoordinatorTest : BaseApplicationServiceTest() {
     private fun saveCurriculum(vararg sectionContents: SectionContent): Long {
         val course = prepareCourse()
         val curriculum =
-            sectionContents.fold(curriculumFinder.findByCourse(requireNotNull(course.id))) { acc, content ->
+            sectionContents.fold(curriculumFinder.getByCourse(requireNotNull(course.id))) { acc, content ->
                 content.lessons.fold(acc.addSection(content.title)) { withSection, lessonContent ->
                     withSection.addLesson(withSection.sections.lastIndex, lessonContent.title)
                 }
@@ -240,5 +240,5 @@ class CurriculumCoordinatorTest : BaseApplicationServiceTest() {
     }
 
     private fun sectionContentsAfterReload(curriculumId: Long): List<SectionContent> =
-        SectionContent.from(curriculumFinder.find(curriculumId))
+        SectionContent.from(curriculumFinder.get(curriculumId))
 }

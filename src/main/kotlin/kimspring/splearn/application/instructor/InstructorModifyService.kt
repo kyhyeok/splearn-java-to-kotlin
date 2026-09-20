@@ -13,7 +13,7 @@ class InstructorModifyService(
     private val memberFinder: MemberFinder,
 ) : InstructorApplication {
     override fun apply(memberId: Long): Instructor {
-        val member = memberFinder.find(memberId)
+        val member = memberFinder.get(memberId)
         checkDuplicateApplication(memberId)
         return instructorRepository.save(Instructor.apply(member))
     }

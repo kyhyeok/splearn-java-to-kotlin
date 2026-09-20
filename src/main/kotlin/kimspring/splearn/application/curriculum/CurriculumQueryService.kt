@@ -10,14 +10,14 @@ import kimspring.splearn.support.stereotype.QueryApplicationService
 class CurriculumQueryService(
     private val curriculumRepository: CurriculumRepository,
 ) : CurriculumFinder {
-    override fun find(curriculumId: Long): Curriculum = curriculumRepository.getById(curriculumId)
+    override fun get(curriculumId: Long): Curriculum = curriculumRepository.getById(curriculumId)
 
-    override fun findByCourse(courseId: Long): Curriculum = curriculumRepository.getByCourseId(courseId)
+    override fun getByCourse(courseId: Long): Curriculum = curriculumRepository.getByCourseId(courseId)
 
-    override fun firstLesson(curriculumId: Long): Lesson? = find(curriculumId).firstLesson()
+    override fun firstLesson(curriculumId: Long): Lesson? = get(curriculumId).firstLesson()
 
     override fun nextLesson(
         curriculumId: Long,
         lessonId: Long,
-    ): Lesson? = find(curriculumId).nextLesson(lessonId)
+    ): Lesson? = get(curriculumId).nextLesson(lessonId)
 }

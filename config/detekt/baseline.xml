@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MagicNumber:ApiControllerAdvice.kt:ApiControllerAdvice$500</ID>
+    <ID>TooManyFunctions:Curriculum.kt:Curriculum</ID>
+  </CurrentIssues>
+</SmellBaseline>

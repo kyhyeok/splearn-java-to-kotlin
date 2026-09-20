@@ -1,27 +1,20 @@
 package kimspring.splearn.application.member.port
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.FunSpec
-import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import kimspring.splearn.domain.member.MemberFixture.createMember
 import kimspring.splearn.domain.member.MemberStatus
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import kimspring.splearn.support.test.BaseRepositoryTest
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.dao.OptimisticLockingFailureException
+import java.time.LocalDateTime
 
-@SpringBootTest
-@Transactional
-class MemberRepositoryTest : FunSpec() {
-    @Autowired
-    private lateinit var memberRepository: MemberRepository
+class MemberRepositoryTest : BaseRepositoryTest() {
+    private val now = LocalDateTime.of(2024, 1, 1, 0, 0)
 
     init {
-        extension(SpringExtension())
-
         test("registerMember") {
             val member = createMember()
 
@@ -51,6 +44,19 @@ class MemberRepositoryTest : FunSpec() {
 
             shouldThrow<DataIntegrityViolationException> {
                 memberRepository.save(createMember(member.email.address))
+            }
+        }
+
+        // 같은 버전을 읽은 두 전이 중 나중 저장은 앞선 결과를 덮어쓰지 않고 실패해야 한다
+        test("staleSaveFailsWithOptimisticLock") {
+            val id = requireNotNull(memberRepository.save(createMember()).id)
+            val first = memberRepository.getById(id)
+            val second = memberRepository.getById(id)
+
+            memberRepository.save(first.activate(now))
+
+            shouldThrow<OptimisticLockingFailureException> {
+                memberRepository.save(second.activate(now))
             }
         }
     }

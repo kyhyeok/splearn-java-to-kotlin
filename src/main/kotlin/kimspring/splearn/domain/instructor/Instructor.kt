@@ -7,6 +7,8 @@ data class Instructor(
     val id: Long? = null,
     val memberId: Long,
     val status: InstructorStatus,
+    // 낙관적 락 버전. 같은 상태를 읽은 두 전이가 모두 성공해 나중 것이 앞선 결과를 덮는 것을 막는다
+    val version: Long? = null,
 ) {
     fun approve(): Instructor {
         if (status != InstructorStatus.PENDING) throw InvalidInstructorStateException("PENDING 상태가 아닙니다.")

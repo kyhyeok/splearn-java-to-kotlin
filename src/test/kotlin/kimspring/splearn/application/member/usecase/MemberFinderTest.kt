@@ -20,16 +20,16 @@ class MemberFinderTest : FunSpec() {
     init {
         extension(SpringExtension())
 
-        test("find") {
+        test("get") {
             val member = memberRegister.register(MemberFixture.createRegisterMemberCommand())
 
-            val found = memberFinder.find(member.id!!)
+            val found = memberFinder.get(member.id!!)
 
             member.id shouldBe found.id
         }
 
-        test("findFail") {
-            shouldThrow<MemberNotFoundException> { memberFinder.find(9999L) }
+        test("getFail") {
+            shouldThrow<MemberNotFoundException> { memberFinder.get(9999L) }
         }
     }
 }

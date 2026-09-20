@@ -8,7 +8,10 @@ plugins {
 
 detekt {
     buildUponDefaultConfig = true
-    ignoreFailures = true
+    config.setFrom(file("config/detekt/detekt.yml"))
+    // 기존 발견은 baseline 에 고정하고, 새 발견만 빌드를 깨게 한다. 갱신: ./gradlew detektBaseline
+    baseline = file("config/detekt/baseline.xml")
+    ignoreFailures = false
 }
 
 group = "kimspring"
@@ -37,7 +40,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-    runtimeOnly("com.h2database:h2")
+    // 운영 클래스패스에 두면 데이터소스 미설정 시 임베디드 H2 로 조용히 폴백한다
+    testRuntimeOnly("com.h2database:h2")
     runtimeOnly("com.mysql:mysql-connector-j")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")

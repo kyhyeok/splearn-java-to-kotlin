@@ -9,7 +9,7 @@ import kimspring.splearn.support.stereotype.QueryApplicationService
 class InstructorQueryService(
     private val instructorRepository: InstructorRepository,
 ) : InstructorFinder {
-    override fun find(instructorId: Long): Instructor = instructorRepository.getById(instructorId)
+    override fun get(instructorId: Long): Instructor = instructorRepository.getById(instructorId)
 
     override fun findByMember(memberId: Long): Instructor? = instructorRepository.findByMemberId(memberId)
 }

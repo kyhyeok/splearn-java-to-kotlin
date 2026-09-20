@@ -8,6 +8,7 @@ import io.kotest.matchers.shouldBe
 import kimspring.splearn.domain.course.CourseFixture
 import kimspring.splearn.support.test.BaseRepositoryTest
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.dao.OptimisticLockingFailureException
 
 class CourseRepositoryTest : BaseRepositoryTest() {
     init {
@@ -47,6 +48,18 @@ class CourseRepositoryTest : BaseRepositoryTest() {
 
             courseRepository.findByInstructorIdAndTitle(requireNotNull(instructor.id), "Title") shouldBe course
             courseRepository.findByInstructorIdAndTitle(requireNotNull(instructor.id), "No Such") shouldBe null
+        }
+
+        test("staleSaveFailsWithOptimisticLock") {
+            val id = requireNotNull(prepareCourse().id)
+            val first = courseRepository.getById(id)
+            val second = courseRepository.getById(id)
+
+            courseRepository.save(first.updateInfo("First", null))
+
+            shouldThrow<OptimisticLockingFailureException> {
+                courseRepository.save(second.updateInfo("Second", null))
+            }
         }
 
         test("uniqueTitleAndInstructor") {

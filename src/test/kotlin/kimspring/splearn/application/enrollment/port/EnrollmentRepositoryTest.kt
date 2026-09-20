@@ -8,6 +8,7 @@ import io.kotest.matchers.shouldBe
 import kimspring.splearn.domain.enrollment.EnrollmentFixture
 import kimspring.splearn.support.test.BaseRepositoryTest
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.dao.OptimisticLockingFailureException
 
 class EnrollmentRepositoryTest : BaseRepositoryTest() {
     init {
@@ -53,6 +54,18 @@ class EnrollmentRepositoryTest : BaseRepositoryTest() {
                 requireNotNull(member1.id),
                 requireNotNull(course2.id),
             ) shouldBe null
+        }
+
+        test("staleSaveFailsWithOptimisticLock") {
+            val id = requireNotNull(prepareEnrollment(prepareActiveMember(), preparePublishedCourse()).id)
+            val first = enrollmentRepository.getById(id)
+            val second = enrollmentRepository.getById(id)
+
+            enrollmentRepository.save(first.startStudying())
+
+            shouldThrow<OptimisticLockingFailureException> {
+                enrollmentRepository.save(second.startStudying())
+            }
         }
 
         test("uniqueMemberAndCourse") {

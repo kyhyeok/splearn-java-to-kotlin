@@ -20,7 +20,7 @@ description: splearn 프로젝트 테스트 작성 규칙. 테스트 코드를 �
 | 아키텍처 검증 | Konsist(계층) + ArchUnit(슬라이스) | 0.17.3 / 1.4.1 |
 | 픽스처 랜덤화 | Instancio (`bean.validation.enabled=true`) | 6.0.0-RC2 |
 | 포맷 | ktlint | 14.0.1 |
-| 정적 분석 | detekt (`ignoreFailures = true`) | 2.0.0-alpha.3 |
+| 정적 분석 | detekt (baseline 밖 발견은 빌드 실패) | 2.0.0-alpha.3 |
 | 테스트 DB | H2 (MySQL 호환 모드) | — |
 
 **Testcontainers 없음** — 통합 테스트는 H2로 돌린다.
@@ -149,6 +149,9 @@ class MemberApiWebMvcTest : FunSpec() {
 
 - `@MockBean` 금지 — `@TestConfiguration` 내부 `@Bean fun foo(): Port = mockk()` 사용.
 - `afterEach { clearAllMocks() }` 항상 선언한다.
+- 슬라이스에는 보안 필터가 없다. Spring Boot 4 는 `spring-boot-security-test` 모듈이 있어야 `@WebMvcTest` 에 보안 자동 구성을
+  넣는데 이 프로젝트는 그 의존성이 없고, `SecurityConfig` 도 슬라이스 포함 대상(`@Controller`·`@ControllerAdvice`·`Filter` 등)이 아니다.
+  그래서 인증 없이 201/200 이 나온다. 401 경로는 `MemberApiTest`(전체 컨텍스트)에서 검증한다.
 - MockMvcTester: `assertThat(mvcTester.method().uri(...)...)` — `exchange()` 없이 바로 assertThat에 전달.
 
 ### 3-5. API 통합 — 전체 Spring 컨텍스트 + MockMvcTester
@@ -319,7 +322,7 @@ member.detail.registeredAt.shouldNotBeNull()
 member.detail.activatedAt.shouldBeNull()
 
 // 예외 검증 — 모든 계층에서 사용
-shouldThrow<MemberNotFoundException> { memberFinder.find(9999L) }
+shouldThrow<MemberNotFoundException> { memberFinder.get(9999L) }
 shouldThrow<InvalidMemberStateException> { member.deactivate() }
 ```
 

@@ -2,6 +2,7 @@ package kimspring.splearn.support.test
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
+import kimspring.splearn.SplearnTestConfiguration
 import kimspring.splearn.application.course.port.CourseRepository
 import kimspring.splearn.application.curriculum.port.CurriculumRepository
 import kimspring.splearn.application.enrollment.port.EnrollmentRepository
@@ -19,6 +20,7 @@ import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.MemberFixture
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
@@ -28,6 +30,8 @@ import java.time.LocalDateTime
  */
 @SpringBootTest
 @Transactional
+// 운영 빈(BCrypt·실시간 Clock) 대신 테스트 빈을 쓴다. 유스케이스 테스트와 같은 컨텍스트를 공유해 컨텍스트 기동도 한 번 준다
+@Import(SplearnTestConfiguration::class)
 abstract class BaseRepositoryTest : FunSpec() {
     @Autowired
     protected lateinit var memberRepository: MemberRepository

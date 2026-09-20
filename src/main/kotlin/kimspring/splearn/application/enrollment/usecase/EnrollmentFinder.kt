@@ -6,7 +6,7 @@ import kimspring.splearn.domain.enrollment.Enrollment
  * 수강을 조회한다
  */
 interface EnrollmentFinder {
-    fun find(enrollmentId: Long): Enrollment
+    fun get(enrollmentId: Long): Enrollment
 
     fun findByMember(memberId: Long): List<Enrollment>
 
