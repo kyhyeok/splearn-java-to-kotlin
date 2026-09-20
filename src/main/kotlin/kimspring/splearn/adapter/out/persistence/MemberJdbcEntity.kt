@@ -13,6 +13,7 @@ data class MemberJdbcEntity(
     val nickname: String,
     val passwordHash: String,
     val status: MemberStatus,
+    val activationToken: String?,
     val detail: MemberDetailJdbcEntity,
 ) {
     fun toDomain(): Member =
@@ -23,6 +24,7 @@ data class MemberJdbcEntity(
             passwordHash = passwordHash,
             status = status,
             detail = detail.toDomain(),
+            activationToken = activationToken,
         )
 
     companion object {
@@ -33,6 +35,7 @@ data class MemberJdbcEntity(
                 nickname = member.nickname,
                 passwordHash = member.passwordHash,
                 status = member.status,
+                activationToken = member.activationToken,
                 detail = MemberDetailJdbcEntity.from(member.detail),
             )
     }

@@ -10,6 +10,7 @@ import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.application.member.usecase.MemberRegister
 import kimspring.splearn.domain.member.DuplicateEmailException
 import kimspring.splearn.domain.member.DuplicateProfileException
+import kimspring.splearn.domain.member.InvalidActivationTokenException
 import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.PasswordEncoder
 import kimspring.splearn.domain.member.Profile
@@ -37,8 +38,10 @@ class MemberModifyService(
         return saved
     }
 
-    override fun activate(memberId: Long): Member {
-        val member = memberRepository.getById(memberId)
+    override fun activate(token: String): Member {
+        val member =
+            memberRepository.findByActivationToken(token)
+                ?: throw InvalidActivationTokenException("유효하지 않거나 만료된 활성화 토큰입니다.")
         return memberRepository.save(member.activate(clock.now()))
     }
 
@@ -69,12 +72,16 @@ class MemberModifyService(
     }
 
     private fun sendWelcomeEmail(member: Member) {
-        emailSender.send(member.email, "등록을 완료해주세요.", "아래 링크를 클릭해서 등록을 완료해주세요.")
+        emailSender.send(
+            member.email,
+            "등록을 완료해주세요.",
+            "아래 링크를 클릭해서 등록을 완료해주세요. /api/members/activate?token=${member.activationToken}",
+        )
     }
 
     private fun checkDuplicateEmail(command: RegisterMemberCommand) {
         if (memberRepository.findByEmail(Email(command.email)) != null) {
-            throw DuplicateEmailException("이미 사용중인 이메일입니다: ${command.email}")
+            throw DuplicateEmailException("이미 사용중인 이메일입니다.")
         }
     }
 }

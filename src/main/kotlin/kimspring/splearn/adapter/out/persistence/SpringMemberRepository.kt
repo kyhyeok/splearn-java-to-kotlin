@@ -11,6 +11,7 @@ interface SpringMemberRepository : CrudRepository<MemberJdbcEntity, Long> {
                member.status            AS status,
                member.nickname          AS nickname,
                member.password_hash     AS password_hash,
+               member.activation_token  AS activation_token,
                detail.id                AS detail_id,
                detail.profile_address   AS detail_profile_address,
                detail.activated_at      AS detail_activated_at,
@@ -31,6 +32,7 @@ interface SpringMemberRepository : CrudRepository<MemberJdbcEntity, Long> {
                m.status            AS status,
                m.nickname          AS nickname,
                m.password_hash     AS password_hash,
+               m.activation_token  AS activation_token,
                md.id               AS detail_id,
                md.profile_address  AS detail_profile_address,
                md.activated_at     AS detail_activated_at,
@@ -43,4 +45,7 @@ interface SpringMemberRepository : CrudRepository<MemberJdbcEntity, Long> {
         """,
     )
     fun findByProfileAddress(profileAddress: String): MemberJdbcEntity?
+
+    // 활성화는 가입당 한 번이라 단일 쿼리 로딩 최적화 없이 파생 쿼리로 둔다
+    fun findByActivationToken(activationToken: String): MemberJdbcEntity?
 }

@@ -23,7 +23,7 @@ class MemberApi(
         return ResponseEntity.created(location).body(MemberRegisterResponse.of(member))
     }
 
-    override fun activate(memberId: Long): MemberResponse = MemberResponse.of(memberLifecycle.activate(memberId))
+    override fun activate(token: String): MemberResponse = MemberResponse.of(memberLifecycle.activate(token))
 
     override fun deactivate(memberId: Long): MemberResponse = MemberResponse.of(memberLifecycle.deactivate(memberId))
 

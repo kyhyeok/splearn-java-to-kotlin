@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 
 @Tag(name = "회원", description = "회원 관리 API")
 @RequestMapping("/api/members")
@@ -36,10 +37,14 @@ interface MemberApiSpec {
         @RequestBody @Valid request: RegisterMemberCommand,
     ): ResponseEntity<MemberRegisterResponse>
 
-    @Operation(summary = "회원 활성화")
-    @PatchMapping("/{memberId}/activate")
+    @Operation(
+        summary = "회원 활성화",
+        description = "가입 메일에 담긴 1회용 토큰으로 등록을 완료한다. 토큰은 가입 후 24시간 동안 유효하다.",
+        responses = [ApiResponse(responseCode = "400", description = "유효하지 않거나 만료된 토큰")],
+    )
+    @PostMapping("/activate")
     fun activate(
-        @PathVariable memberId: Long,
+        @RequestParam token: String,
     ): MemberResponse
 
     @Operation(summary = "회원 비활성화")

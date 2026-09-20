@@ -4,8 +4,10 @@ data class Profile(
     val address: String,
 ) {
     companion object {
-        private val PROFILE_ADDRESS_PATTERN = Regex("[a-z0-9]+")
-        private const val MAX_ADDRESS_LENGTH = 15
+        // Command 의 Bean Validation 이 같은 규칙을 참조한다 — 형식·길이 정책의 단일 출처
+        const val ADDRESS_REGEX = "[a-z0-9]+"
+        const val MAX_ADDRESS_LENGTH = 15
+        private val PROFILE_ADDRESS_PATTERN = Regex(ADDRESS_REGEX)
     }
 
     init {

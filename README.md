@@ -86,7 +86,7 @@ PENDING(등록 대기) → ACTIVE(등록 완료) → DEACTIVATED(탈퇴)
 | Method | URI | 설명 | 성공 응답 |
 |---|---|---|---|
 | POST | `/api/members` | 회원 등록 | `201 Created` + `Location` 헤더 |
-| PATCH | `/api/members/{id}/activate` | 등록 완료 | `200 OK` |
+| POST | `/api/members/activate?token=` | 등록 완료 (가입 메일의 1회용 토큰, 24시간 유효) | `200 OK` |
 | PATCH | `/api/members/{id}/deactivate` | 탈퇴 | `200 OK` |
 | PATCH | `/api/members/{id}` | 회원 정보 수정 | `200 OK` |
 
@@ -125,6 +125,18 @@ export JWT_SECRET=$(openssl rand -base64 32)
 
 Spring Boot Docker Compose 통합을 사용하므로 `bootRun` 실행 시 MySQL 컨테이너가 자동으로 기동됩니다.
 
+### 운영 실행
+
+운영 프로파일(`prod`)은 Swagger UI·OpenAPI 문서를 끄고 커넥션 풀 설정을 명시합니다. 데이터소스와 JWT 키는 환경변수로만 받으며, 하나라도 없으면 기동에 실패합니다.
+
+```bash
+export SPRING_DATASOURCE_URL=jdbc:mysql://<host>:3306/splearn
+export SPRING_DATASOURCE_USERNAME=<user>
+export SPRING_DATASOURCE_PASSWORD=<password>
+export JWT_SECRET=<Base64 32바이트>
+java -jar build/libs/splearn-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+```
+
 ### 테스트 실행
 
 ```bash
@@ -157,6 +169,7 @@ Flyway로 스키마를 관리합니다. 마이그레이션 파일은 `src/main/r
 | V4 | `profile_address` 컬럼 크기 조정 (VARCHAR 15) |
 | V8 | `curriculum`, `section`, `lesson` 테이블 생성 (섹션·수업 순서는 `section_order`·`lesson_order`) |
 | V9 | `curriculum.version` 컬럼 추가 (낙관적 락) |
+| V10 | `member.activation_token` 컬럼 추가 (이메일 활성화 토큰) |
 
 ---
 

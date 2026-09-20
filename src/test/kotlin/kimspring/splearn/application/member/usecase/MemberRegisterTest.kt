@@ -12,6 +12,7 @@ import kimspring.splearn.application.member.usecase.MemberLifecycle
 import kimspring.splearn.application.member.usecase.MemberModifier
 import kimspring.splearn.domain.member.DuplicateEmailException
 import kimspring.splearn.domain.member.DuplicateProfileException
+import kimspring.splearn.domain.member.InvalidActivationTokenException
 import kimspring.splearn.domain.member.Member
 import kimspring.splearn.domain.member.MemberFixture
 import kimspring.splearn.domain.member.MemberStatus
@@ -51,16 +52,31 @@ class MemberRegisterTest : FunSpec() {
         test("activate") {
             val member = registerMember()
 
-            val activated = memberLifecycle.activate(member.id!!)
+            val activated = memberLifecycle.activate(member.activationToken!!)
 
             activated.status shouldBe MemberStatus.ACTIVE
             activated.detail.activatedAt.shouldNotBeNull()
         }
 
+        test("activateFailInvalidToken") {
+            registerMember()
+
+            shouldThrow<InvalidActivationTokenException> { memberLifecycle.activate("no-such-token") }
+        }
+
+        test("activateFailReusedToken") {
+            val member = registerMember()
+            val token = requireNotNull(member.activationToken)
+            memberLifecycle.activate(token)
+
+            // 1회용 — 활성화 시 토큰이 비워지므로 같은 토큰으로 다시 찾을 수 없다
+            shouldThrow<InvalidActivationTokenException> { memberLifecycle.activate(token) }
+        }
+
         test("deactivate") {
             val member = registerMember()
 
-            val activated = memberLifecycle.activate(member.id!!)
+            val activated = memberLifecycle.activate(member.activationToken!!)
             val deactivated = memberLifecycle.deactivate(activated.id!!)
 
             deactivated.status shouldBe MemberStatus.DEACTIVATED
@@ -69,7 +85,7 @@ class MemberRegisterTest : FunSpec() {
 
         test("updateInfo") {
             val member = registerMember()
-            val activated = memberLifecycle.activate(member.id!!)
+            val activated = memberLifecycle.activate(member.activationToken!!)
 
             val command = UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개")
             val updated = memberModifier.updateInfo(activated.id!!, command)
@@ -78,12 +94,14 @@ class MemberRegisterTest : FunSpec() {
         }
 
         test("updateInfoFail") {
-            val memberId = requireNotNull(registerMember().id)
-            memberLifecycle.activate(memberId)
+            val member = registerMember()
+            val memberId = requireNotNull(member.id)
+            memberLifecycle.activate(requireNotNull(member.activationToken))
             memberModifier.updateInfo(memberId, UpdateMemberInfoCommand("Hyeok", "kim001", "자기소개"))
 
-            val member2Id = requireNotNull(registerMember("kiim@splearn.app").id)
-            memberLifecycle.activate(member2Id)
+            val member2 = registerMember("kiim@splearn.app")
+            val member2Id = requireNotNull(member2.id)
+            memberLifecycle.activate(requireNotNull(member2.activationToken))
 
             // member2는 기존의 member와 같은 프로필 주소를 사용할 수 없다
             shouldThrow<DuplicateProfileException> {

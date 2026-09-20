@@ -60,7 +60,7 @@ abstract class BaseApplicationServiceTest : FunSpec() {
 
     protected fun prepareActiveMember(): Member {
         val registered = memberRegister.register(MemberFixture.createRegisterMemberCommand())
-        return memberLifecycle.activate(requireNotNull(registered.id))
+        return memberLifecycle.activate(requireNotNull(registered.activationToken))
     }
 
     protected fun preparePendingInstructor(): Instructor =

@@ -5,6 +5,10 @@ data class Section(
     val title: String,
     val lessons: List<Lesson> = emptyList(),
 ) {
+    init {
+        require(title.length <= CURRICULUM_TITLE_MAX_LENGTH) { "섹션 제목은 ${CURRICULUM_TITLE_MAX_LENGTH}자를 넘을 수 없습니다" }
+    }
+
     fun addLesson(title: String): Section = copy(lessons = lessons + Lesson.create(title))
 
     fun addLesson(

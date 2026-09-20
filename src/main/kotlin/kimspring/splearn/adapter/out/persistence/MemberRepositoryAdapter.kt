@@ -23,4 +23,7 @@ class MemberRepositoryAdapter(
 
     override fun findByProfile(profile: Profile): Member? =
         springMemberRepository.findByProfileAddress(profile.address)?.toDomain()
+
+    override fun findByActivationToken(token: String): Member? =
+        springMemberRepository.findByActivationToken(token)?.toDomain()
 }

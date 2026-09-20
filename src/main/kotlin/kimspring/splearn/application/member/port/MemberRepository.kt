@@ -14,4 +14,6 @@ interface MemberRepository {
     fun findByEmail(email: Email): Member?
 
     fun findByProfile(profile: Profile): Member?
+
+    fun findByActivationToken(token: String): Member?
 }

@@ -38,6 +38,14 @@ class MemberRepositoryTest : FunSpec() {
             found.detail.registeredAt.shouldNotBeNull()
         }
 
+        test("findByActivationToken") {
+            val saved = memberRepository.save(createMember())
+            val token = saved.activationToken.shouldNotBeNull()
+
+            memberRepository.findByActivationToken(token).shouldNotBeNull().id shouldBe saved.id
+            memberRepository.findByActivationToken("no-such-token").shouldBeNull()
+        }
+
         test("duplicateEmailFail") {
             val member = memberRepository.save(createMember())
 

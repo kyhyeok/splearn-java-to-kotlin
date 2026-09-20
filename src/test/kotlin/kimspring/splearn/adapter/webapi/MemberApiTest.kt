@@ -64,6 +64,25 @@ class MemberApiTest : FunSpec() {
             foundMember.status shouldBe MemberStatus.PENDING
         }
 
+        // 가입 → 메일 토큰 → 활성화 흐름. 순번 id 로는 활성화 경로가 없다
+        test("activateWithToken") {
+            val registered = memberRegister.register(MemberFixture.createRegisterMemberCommand())
+            val token = requireNotNull(registered.activationToken)
+
+            assertThat(
+                mvcTester
+                    .post()
+                    .uri("/api/members/activate")
+                    .param("token", token),
+            ).hasStatusOk()
+                .bodyJson()
+                .extractingPath("$.memberId")
+                .asNumber()
+                .isEqualTo(registered.id!!.toInt())
+
+            memberRepository.getById(registered.id!!).status shouldBe MemberStatus.ACTIVE
+        }
+
         test("duplicateEmail") {
             val request: RegisterMemberCommand = MemberFixture.createRegisterMemberCommand()
             memberRegister.register(request)
@@ -81,6 +100,9 @@ class MemberApiTest : FunSpec() {
             assertThat(result)
                 .apply(print())
                 .hasStatus(HttpStatus.CONFLICT)
+                .bodyJson()
+                .extractingPath("$.code")
+                .isEqualTo("M002")
         }
     }
 }

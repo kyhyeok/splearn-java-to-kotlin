@@ -77,6 +77,6 @@ class MemberAuthenticatorTest : FunSpec() {
 
     private fun registerActivatedMember(command: RegisterMemberCommand): Member {
         val member = memberRegister.register(command)
-        return memberLifecycle.activate(requireNotNull(member.id))
+        return memberLifecycle.activate(requireNotNull(member.activationToken))
     }
 }

@@ -1,0 +1,41 @@
+# PR 머지 조건으로 걸 검사. GitHub 저장소 설정의 main 브랜치 보호 규칙에서 이 워크플로우를 필수 체크로 지정한다
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # gitleaks 가 전체 이력을 스캔하려면 얕은 체크아웃이면 안 된다
+          fetch-depth: 0
+
+      - name: 시크릿 스캔
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: 테스트·ktlint·detekt
+        run: ./gradlew test ktlintCheck detekt --continue
+
+      - name: 리포트 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            build/reports/tests/test
+            build/reports/detekt
+            build/reports/ktlint

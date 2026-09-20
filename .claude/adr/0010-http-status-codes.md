@@ -23,6 +23,8 @@ RFC 7231(HTTP/1.1 Semantics)과 Roy Fielding의 REST 논문은 상태 코드를 
 
 **201 규칙:** `ResponseEntity.created(URI.create("/api/{resource}/${saved.id}")).body(...)` 형태로 반환한다.
 
+**예외 — 자격 증명으로 식별하는 상태 전이:** 대상을 URL 경로의 id가 아니라 토큰 같은 자격 증명으로 식별하는 상태 전이(예: `POST /api/members/activate?token=`)는 리소스 경로로 표현할 수 없으므로 `POST` + `200 OK`를 쓴다. 새 리소스를 만들지 않으므로 201이 아니다.
+
 ### 리다이렉션 계열 (3xx)
 
 | 코드 | 사용 상황 |

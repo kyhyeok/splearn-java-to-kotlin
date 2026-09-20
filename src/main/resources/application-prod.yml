@@ -1,0 +1,22 @@
+# 운영 프로파일: java -jar splearn.jar --spring.profiles.active=prod
+spring:
+  datasource:
+    # 기본값 없음 — 미설정 시 기동 실패가 의도된 동작이다. 임베디드 H2 로 조용히 폴백하는 것을 막는다
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      # 초기값. DB 의 max_connections 와 인스턴스 수를 보고 조정한다
+      maximum-pool-size: 10
+      connection-timeout: 5000
+      leak-detection-threshold: 30000
+  jdbc:
+    template:
+      query-timeout: 10s
+
+# API 문서는 운영에 노출하지 않는다
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

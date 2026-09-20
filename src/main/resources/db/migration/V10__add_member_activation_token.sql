@@ -1,0 +1,2 @@
+ALTER TABLE member ADD COLUMN activation_token VARCHAR(36) NULL;
+CREATE UNIQUE INDEX UK_MEMBER_ACTIVATION_TOKEN ON member (activation_token);

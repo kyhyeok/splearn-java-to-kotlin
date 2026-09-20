@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException
 import kimspring.splearn.adapter.webapi.dto.ErrorResponse
 import kimspring.splearn.domain.shared.ErrorCode
 import kimspring.splearn.domain.shared.SplearnException
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -64,6 +65,22 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
     fun handleAccessDenied(e: AccessDeniedException): ResponseEntity<ErrorResponse> {
         log.warn { "접근 거부: ${e.message}" }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.of(ErrorCode.FORBIDDEN))
+    }
+
+    // 도메인 require 가 거절한 잘못된 입력. Command 검증이 먼저 막는 것이 원칙이고 이 핸들러는 안전망이다.
+    // 내부 불변식 위반(requireNotNull 등)도 같은 예외 타입이라 400 으로 보이는 대가가 있다
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgument(e: IllegalArgumentException): ResponseEntity<ErrorResponse> {
+        log.warn { "잘못된 입력: ${e.message}" }
+        return ResponseEntity.badRequest().body(ErrorResponse.of(ErrorCode.INVALID_INPUT))
+    }
+
+    // 사전 중복 검사를 동시에 통과한 요청이 유니크 제약에 걸린 경우. 데이터는 보호됐으므로 500 이 아니라 409 다.
+    // DB 메시지에는 충돌한 값(이메일 등)이 실리므로 로그에 남기지 않는다
+    @ExceptionHandler(DuplicateKeyException::class)
+    fun handleDuplicateKey(): ResponseEntity<ErrorResponse> {
+        log.warn { "유니크 제약 충돌로 요청을 거절했습니다" }
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE))
     }
 
     @ExceptionHandler(OptimisticLockingFailureException::class)

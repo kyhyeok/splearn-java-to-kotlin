@@ -29,8 +29,19 @@ class MemberTest : FunSpec() {
         }
 
         test("activate") {
+            member.activationToken.shouldNotBeNull()
+
             member = member.activate(now)
+
             member.status shouldBe MemberStatus.ACTIVE
+            // 1회용 토큰은 활성화와 함께 소비된다
+            member.activationToken.shouldBeNull()
+        }
+
+        test("activateFailExpired") {
+            val expired = now.plusHours(Member.ACTIVATION_VALID_HOURS).plusMinutes(1)
+
+            shouldThrow<InvalidActivationTokenException> { member.activate(expired) }
         }
 
         test("activateFail") {

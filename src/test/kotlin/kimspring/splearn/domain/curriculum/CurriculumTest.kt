@@ -24,6 +24,13 @@ class CurriculumTest :
             shouldThrow<IllegalArgumentException> { Curriculum.create(CourseFixture.createCourse()) }
         }
 
+        test("titleTooLongFail") {
+            val tooLong = "a".repeat(CURRICULUM_TITLE_MAX_LENGTH + 1)
+
+            shouldThrow<IllegalArgumentException> { Section.create(tooLong) }
+            shouldThrow<IllegalArgumentException> { Lesson.create(tooLong) }
+        }
+
         test("addSection") {
             val curriculum = CurriculumFixture.createCurriculum().addSection("Section 1")
 
